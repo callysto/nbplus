@@ -168,8 +168,6 @@ class Graph(D3):
             for key, value in style.items():
                 self.edgeElement += '\n\t\t'+'.attr(\"%s\", %s)' % (key, value)
 
-        self.forces.append('.force("link", d3.forceLink().id(d => d.id))');
-
     def changeFriction(self, mu):
         self.constraints.append('.velocityDecay(%d)' % mu);
 
