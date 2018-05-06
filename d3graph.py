@@ -52,21 +52,27 @@ class D3:
 
 # -- svg constructor class -- #
 class SVG(D3):
-    def __init__(self, height, centerOrigin=True):
-        D3.__init__(self)                # inherits D3 class methods/variables
-        self.height = height             # copies height parameter
-        self.centerOrigin = centerOrigin # place origin at center (defaults to True)
+    def __init__(self, height='width', centerOrigin=False):
+        D3.__init__(self)                                      # inherits D3 class methods/variables
+        self.height = str(height) if height != '' else 'width' # copies height parameter
+        self.centerOrigin = centerOrigin                       # place origin at center (defaults to False)
 
-        # html tag, substitutes self.height
-        self.tag = '<svg width = "100%%" height = "%s"></svg>' % self.height
+        # html tag, sets self.height if it is known
+        self.tag = ('<svg width = "100%%"%s></svg>' %
+                   (' height = "%s"' % self.height if self.height.isdigit() else ''))
 
         # svg container/dimensions
         svgHeader = '// -- svg container/dimensions -- //'
         svg = 'var svg = d3.select("svg")'
 
+        # remove all elements from svg, set svg width
         clearSvg = 'svg.selectAll("*").remove()'
         getWidth = 'var width = +svg.node().getBoundingClientRect().width'
-        getHeight = 'var height = +svg.attr("height")'
+        
+        # get svg height if it is a number, otherwise set svg height to string (defaults to 'width')
+        getHeight = ('var height = ' +
+                    ('+svg.attr("height")' if self.height.isdigit() else self.height))
+        if not self.height.isdigit(): getHeight += (';\n' 'svg.attr("height", height)')
 
         # place origin
         origin = ('\n' '// -- place origin -- //' '\n'
