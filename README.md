@@ -27,7 +27,7 @@ Well-behaved objects are aptly named (_what does the object do?_) and readily ex
 
 * [**Cybera**](https://www.cybera.ca) - *Cybera provides supercomputing services.* 
 
-See also the list of [contributors](https://github.com/callysto/curriculum-notebooks/graphs/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/callysto/nbplus/graphs/contributors) who participated in this project.
 
 ## License
 
