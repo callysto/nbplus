@@ -184,6 +184,9 @@ class Graph(D3):
     def changeFriction(self, mu):
         self.constraints.append('.velocityDecay(%d)' % mu);
 
+    def changeAlpha(self, nu):
+        self.constraints.append('.alphaDecay(%d)' % nu);
+
     def addTime(self):
         constraint = '.on("tick", () => {'
         if self.nodes != []:
