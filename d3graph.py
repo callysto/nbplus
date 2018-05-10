@@ -94,7 +94,7 @@ class Graph(D3):
     def __init__(self, directed=False):
         D3.__init__(self)        # inherits D3 class methods/variables
         # self.directed = directed # if True, expects edge directions
-        self.constraints, self.forces, self.nodes, self.edges = [], [], [], [];
+        self.constraints, self.forces, self.nodes, self.edges, self.drags = [], [], [], [], [];
 
     def get(self):
         self.js = ''
@@ -119,6 +119,13 @@ class Graph(D3):
             for constraint in self.constraints:
                 self.js += '\n'+'simulation'+constraint
                 self.js += ';'
+                
+        if self.drags != []:
+            self.js += '\n\n'
+            self.js += 'node.call((() => {'
+            for drag in self.drags:
+                self.js += drag+'\n'
+            self.js += '\n})());'+'\n\n'
 
         self.js += ('\n' 'simulation.nodes(nodes);' if self.nodes != [] else '')
         self.js += ('\n' 'simulation.force("link").links(edges);' if self.edges != [] else '')
@@ -188,3 +195,33 @@ class Graph(D3):
             constraint += '\n\t'+'\t.attr("x2", d => d.target.x).attr("y2", d => d.target.y)'
         constraint += '\n'+'})'
         self.constraints.append(constraint);
+        
+    def addDrag(self, direction=['x', 'y']):
+        # when dragging ends
+        drag = ''
+        drag += '\n'+'function dragstart(d) {'
+        drag += '\n\t'+'if (!d3.event.active) simulation.alpha(1).restart();'
+        for d in direction:
+            drag += '\n\t'+'d.f'+d+' = d.'+d+';'
+        drag += '\n'+'}'
+        
+        # when actively dragging
+        drag += '\n'+'function dragging(d) {'
+        for d in direction:
+            drag += '\n\t'+'d.f'+d+' = d3.event.'+d+';'
+        drag += '\n'+'}'
+        
+        # when dragging ends
+        drag += '\n'+'function dragend(d) {'
+        drag += '\n\t'+'if (!d3.event.active) simulation.alphaTarget(0);'
+        for d in direction:
+            drag += '\n\t'+'d.f'+d+' = null;'
+        drag += '\n'+'}'
+        
+        # bind drag functions
+        drag += '\n'+'return d3.drag()'
+        drag += '\n\t'+'.on("start", dragstart)'
+        drag += '\n\t'+'.on("drag", dragging)'
+        drag += '\n\t'+'.on("end", dragend);'
+        
+        self.drags.append(drag);
