@@ -1,7 +1,7 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(
     name='nbplus',
     version='0.1dev',
-    packages=['nbplus']
+    packages=find_packages(),
 )
