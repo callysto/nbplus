@@ -3,5 +3,5 @@ from distutils.core import setup
 setup(
     name='nbplus',
     version='0.1dev',
-    packages=['nbvis', 'nbshape']
+    packages=['nbplus/nbvis', 'nbplus/nbshape']
 )
