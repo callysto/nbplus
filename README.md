@@ -4,7 +4,7 @@ A collection of classes and methods for Creators with intent to enable greater i
 
 ## Getting Started
 
-Module may be imported via
+Modules may be imported via
 
 `pip install --upgrade --user git+git://github.com/callysto/nbplus.git#egg=nbplus`
 
