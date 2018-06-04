@@ -4,15 +4,15 @@ A collection of classes and methods for Creators with intent to enable greater i
 
 ## Getting Started
 
-Modules may be imported via [packyou](https://github.com/llazzaro/packyou).
+Module may be imported via
 
-To install `packyou`, run `!pip install packyou --user` in a Python 3 notebook.
+`pip install --upgrade --user git+git://github.com/callysto/nbplus.git#egg=nbplus`
 
-To import a class/method from a module, e.g. to import `D3` from`d3graph`, we first make `d3graph.py` visible to the Python kernel, then we import the specified class/method:
+e.g.
 
-```
-from packyou.github.callysto.nbplus import d3graph
-from d3graph import D3
+```python
+import nbshape.nbshape
+from nbvis.d3graph import D3
 ```
 
 ## Contributing
