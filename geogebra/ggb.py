@@ -33,7 +33,7 @@ class GGBOptions():
 
     def asString(self):
         self.paramsList = list(map(
-            lambda kv: '\"%s\" : %s' % (kv[0], kv[1]),
+            lambda kv: '\"%s\": %s' % (kv[0], kv[1]),
             self.params.items()
         ))
         self.paramsString = ', '.join(self.paramsList)
