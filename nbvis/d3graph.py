@@ -68,7 +68,7 @@ class SVG(D3):
         # remove all elements from svg, set svg width
         clearSvg = 'svg.selectAll("*").remove()'
         getWidth = 'var width = +svg.node().getBoundingClientRect().width'
-        
+
         # get svg height if it is a number, otherwise set svg height to string (defaults to 'width')
         getHeight = ('var height = ' +
                     ('+svg.attr("height")' if self.height.isdigit() else self.height))
@@ -119,7 +119,7 @@ class Graph(D3):
             for constraint in self.constraints:
                 self.js += '\n'+'simulation'+constraint
                 self.js += ';'
-                
+
         if self.drags != []:
             self.js += '\n\n'
             self.js += 'node.call((() => {'
@@ -198,7 +198,7 @@ class Graph(D3):
             constraint += '\n\t'+'\t.attr("x2", d => d.target.x).attr("y2", d => d.target.y)'
         constraint += '\n'+'})'
         self.constraints.append(constraint);
-        
+
     def addDrag(self, direction=['x', 'y']):
         # when dragging ends
         drag = ''
@@ -207,24 +207,24 @@ class Graph(D3):
         for d in direction:
             drag += '\n\t'+'d.f'+d+' = d.'+d+';'
         drag += '\n'+'}'
-        
+
         # when actively dragging
         drag += '\n'+'function dragging(d) {'
         for d in direction:
             drag += '\n\t'+'d.f'+d+' = d3.event.'+d+';'
         drag += '\n'+'}'
-        
+
         # when dragging ends
         drag += '\n'+'function dragend(d) {'
         drag += '\n\t'+'if (!d3.event.active) simulation.alphaTarget(0);'
         for d in direction:
             drag += '\n\t'+'d.f'+d+' = null;'
         drag += '\n'+'}'
-        
+
         # bind drag functions
         drag += '\n'+'return d3.drag()'
         drag += '\n\t'+'.on("start", dragstart)'
         drag += '\n\t'+'.on("drag", dragging)'
         drag += '\n\t'+'.on("end", dragend);'
-        
+
         self.drags.append(drag);
