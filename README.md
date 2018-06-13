@@ -4,15 +4,17 @@ A collection of classes and methods for Creators with intent to enable greater i
 
 ## Getting Started
 
-Modules may be imported via
+All submodules are installed from the `staging` branch via
 
-`pip install --upgrade --user git+git://github.com/callysto/nbplus.git#egg=nbplus`
+`pip install --upgrade --force-reinstall --user git+git://github.com/callysto/nbplus.git@staging#egg=nbplus`. 
+
+Once installed, submodules may be imported separately.
 
 e.g.
 
 ```python
-import nbshape.nbshape
-from nbvis.d3graph import D3
+import nblayout.uiButtons
+from nbvis.ggb import *
 ```
 
 ## Contributing
