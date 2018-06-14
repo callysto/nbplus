@@ -78,7 +78,6 @@ class Visualize(object):
         #else:
         #    print('Unrecognized D3 object called', '"{}"'.format(name), 'not added to visualization ...')
 
-        """
         with open('mb.js', 'r') as mathBoxWrapper:
             mb =  mathBoxWrapper.read()
             self.js += mb
@@ -87,7 +86,6 @@ class Visualize(object):
             for code in get_ipython().user_ns['mathbox_code']:
                 self.js += "\n" + code + "\n"
         except KeyError: pass
-        """
 
         try:
             for code in get_ipython().user_ns['d3_code']:
