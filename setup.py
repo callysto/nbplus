@@ -4,4 +4,5 @@ setup(
     name='nbplus',
     version='0.1dev',
     packages=find_packages(),
+    include_package_data=True
 )
