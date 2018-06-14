@@ -1,6 +1,6 @@
 # nbplus
 
-A collection of classes and methods for Creators with intent to enable greater interactivity and visual aesthetic in Jupyter notebooks.
+A collection of classes and methods for Creators wanting greater interactivity and visual aesthetic in Jupyter notebooks.
 
 ## Getting Started
 
