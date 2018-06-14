@@ -7,6 +7,8 @@
 # Distributed under the terms of the MIT License
 # https://opensource.org/licenses/MIT
 
+import os
+
 from IPython.display import Javascript, clear_output
 from IPython.core.magic import register_cell_magic
 from IPython import get_ipython
@@ -78,7 +80,9 @@ class Visualize(object):
         #else:
         #    print('Unrecognized D3 object called', '"{}"'.format(name), 'not added to visualization ...')
 
-        with open('mb.js', 'r') as mathBoxWrapper:
+        module_dir = os.path.dirname(os.path.abspath(__file__))
+        mb_filepath = os.path.join(module_dir, 'mb.js')
+        with open(mb_filepath, 'r') as mathBoxWrapper:
             mb =  mathBoxWrapper.read()
             self.js += mb
 
