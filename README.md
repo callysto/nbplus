@@ -21,7 +21,7 @@ See the [training manual]() for documentation and use cases.
 
 ## Contributing
 
-Create and develop upon a new branch to contribute. Push merge requests to the `staging` branch.
+Create and develop upon a new branch to contribute. Submit pull requests to the `staging` branch.
 
 Well-behaved objects are aptly named (_what does the object do?_) and readily expose effective code so that incoming learners may transparently access their underlying functionality.
 
