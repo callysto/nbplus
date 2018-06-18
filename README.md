@@ -1,6 +1,6 @@
 # nbplus
 
-[nbplus](https://github.com/callysto/nbplus) (working title) a collection of Callysto-made Python modules for Creators wanting greater interactivity and visual aesthetic in Jupyter notebooks. It reflects a desire for aggregation of reusable code and uniformity in how we develop interactive content.
+[nbplus](https://github.com/callysto/nbplus) (working title) a collection of Callysto-made Python modules for Creators wanting greater interactivity and visual aesthetic in Jupyter notebooks. The tools here reflect a desire for aggregation of reusable code and uniformity in how we develop interactive content.
 
 ## Getting Started
 
