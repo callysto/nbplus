@@ -13,7 +13,8 @@ from IPython.display import Javascript
 
 # set RequireJS paths
 paths = {
-    "d3-require": "//unpkg.com/d3-require@1.0.4/dist/d3-require.min"
+    "d3-require": "//unpkg.com/d3-require@1.0.4/dist/d3-require.min",
+    "topojson": "//unpkg.com/topojson@3"
 }
 
 # list default D3 modules
