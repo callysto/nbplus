@@ -16,9 +16,9 @@ from IPython.display import HTML, Javascript
 
 module_directory = os.path.dirname(os.path.abspath(__file__))
 
-style_filepath = os.path.join(module_directory, 'toggle_style.css')
-toggle_filepath = os.path.join(module_directory, 'add_toggles.js')
-toolbar_filepath = os.path.join(module_directory, 'append_toolbar.js')
+style_filepath = os.path.join(module_directory, 'src/toggle_style.css')
+toggle_filepath = os.path.join(module_directory, 'src/add_toggles.js')
+toolbar_filepath = os.path.join(module_directory, 'src/append_toolbar.js')
 
 with open(style_filepath, 'r') as f:
     display(HTML(f.read()))
