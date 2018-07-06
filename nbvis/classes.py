@@ -95,24 +95,24 @@ class Vis:
         if not now:
             """
             """
-            mb_filepath = os.path.join(module_directory, 'mb.js')
-            with open(mb_filepath, 'r') as mathBoxWrapper:
-                mb =  mathBoxWrapper.read()
-                self.js += mb
+            if len(MathBox.instances) > 0:
+                mb_filepath = os.path.join(module_directory, 'mb.js')
+                with open(mb_filepath, 'r') as mathBoxWrapper:
+                    mb =  mathBoxWrapper.read()
+                    self.js += mb
+
+                try:
+                    for code in get_ipython().user_ns['mathbox_code']:
+                        self.js += "\n" + code + "\n"
+                except KeyError: pass
 
             """
             """
-            try:
-                for code in get_ipython().user_ns['mathbox_code']:
-                    self.js += "\n" + code + "\n"
-            except KeyError: pass
-
-            """
-            """
-            try:
-                for code in get_ipython().user_ns['d3_code']:
-                    self.js += "\n" + code + "\n"
-            except KeyError: pass
+            if len(D3.instances) > 0:
+                try:
+                    for code in get_ipython().user_ns['d3_code']:
+                        self.js += "\n" + code + "\n"
+                except KeyError: pass
 
         """
         """
@@ -121,7 +121,7 @@ class Vis:
             open(config_filepath, "r").read()
                                    .replace("#paths", dumps(paths))
                                    .replace("#requires", str(self.require))
-                                   .replace("#require_names", ", ".join(["d3", "topojson", "mathBox"]))
+                                   .replace("#require_names", ", ".join(["d3", "topojson"]))
                                    .replace("#modules", str(self.modules))
                                    .replace("#code", self.js)
         )
