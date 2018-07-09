@@ -6,7 +6,7 @@
 
 All submodules are installed via the command line using
 
-`pip install --upgrade --force-reinstall --user git+git://github.com/callysto/nbplus.git#egg=nbplus`.
+`pip install --upgrade --force-reinstall --user git+git://github.com/callysto/nbplus.git@staging#egg=nbplus`.
 
 Once installed, submodules may be imported separately.
 
