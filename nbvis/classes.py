@@ -239,7 +239,7 @@ class SVG:
         svg_filepath = os.path.join(module_directory, 'svg.js')
         self.js = (
             open(svg_filepath, "r").read()
-                                   .replace("#name", '"#%s"' % name)
+                                   .replace("#name", '"%s"' % name)
                                    .replace("#width", '"100%"')
                                    .replace("#height", str(height))
         )
