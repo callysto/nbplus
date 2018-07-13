@@ -1,0 +1,2 @@
+include nbhide/static/*.css
+include nbhide/static/*.js
