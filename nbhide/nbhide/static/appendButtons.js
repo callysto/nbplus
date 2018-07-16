@@ -139,7 +139,7 @@ requirejs(["d3"], d3 => {
         rect.on("mouseover", () => button.style("fill", "#333"));
         rect.on("mouseout", () => button.style("fill", "#777"));
         rect.on("click", function() {
-          Jupyter.notebook.kernel.interrupt();
+          // Jupyter.notebook.kernel.interrupt();
           Jupyter.notebook.execute_all_cells();
         });
     });
