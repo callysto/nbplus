@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Jupyter notebook magics to queue and execute D3 and MathBox code
+Assembled by Eric Easthope
+"""
+
 from IPython import get_ipython
 from IPython.core import magic_arguments
 from IPython.core.magic import Magics, magics_class, cell_magic
@@ -6,10 +14,7 @@ from .classes import Vis
 
 @magics_class
 class nbvisMagics(Magics):
-    """
-    Jupyter notebook magics to queue and execute D3 and MathBox code
-    """
-
+    
     @cell_magic
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('--queue',
