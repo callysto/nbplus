@@ -1,3 +1,5 @@
 include nbvis/*.js
+include nbvis/static/*.js
+include nbvis/static/*.css
 include nblayout/src/*.js
 include nblayout/src/*.css
