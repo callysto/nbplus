@@ -1,0 +1,5 @@
+{
+  "load_extensions": {
+    "nbhide/static": true
+  }
+}
