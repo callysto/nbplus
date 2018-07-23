@@ -14,7 +14,7 @@ e.g.
 
 ```python
 import nblayout.uiButtons
-from nbvis.ggb import *
+from geogebra.ggb import *
 ```
 
 See the [training manual]() for documentation and use cases.
