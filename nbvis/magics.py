@@ -2,28 +2,28 @@
 # -*- coding: utf-8 -*-
 
 """
-Jupyter notebook magics to queue and execute D3 and MathBox code
+Jupyter notebook magics to queue and execute D3.js and MathBox.js code
 Assembled by Eric Easthope
 """
+
+from .classes import Vis
 
 from IPython import get_ipython
 from IPython.core import magic_arguments
 from IPython.core.magic import Magics, magics_class, cell_magic
 
-from .classes import Vis
-
 @magics_class
 class nbvisMagics(Magics):
-    
+
     @cell_magic
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('--queue',
+    @magic_arguments.argument('--queue', '-q',
           action='store_true',
-          help='Add cell code to a list of D3 code for later execution'
+          help='Add code from this cell to a list of D3.js code for later execution'
     )
     @magic_arguments.argument('--reset',
           action='store_true',
-          help='Reset d3_code to an empty list before appending code from current cell'
+          help='Reset D3.js code container to an empty list before appending code from this cell'
     )
     def d3(self, line, cell):
         args = magic_arguments.parse_argstring(self.d3, line)
@@ -52,13 +52,13 @@ class nbvisMagics(Magics):
 
     @cell_magic
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('--queue',
+    @magic_arguments.argument('--queue', '-q',
           action='store_true',
-          help='Add cell code to a list of MathBox code for later execution'
+          help='Add code from this cell to a list of MathBox.js code for later execution'
     )
     @magic_arguments.argument('--reset',
           action='store_true',
-          help='Reset mathbox_code to an empty list before appending code from current cell'
+          help='Reset MathBox.js code container to an empty list before appending code from this cell'
     )
     def mathbox(self, line, cell):
         args = magic_arguments.parse_argstring(self.mathbox, line)
