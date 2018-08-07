@@ -11,7 +11,8 @@ Here I've listed a few functional changes I needed to make, as well as my instal
     ```
     from wherever your `nbplus/nbtemplate` is.
 2. To get this install to work, I found it easier to just copy the `nbtemplate/` directory to `~./local/lib/python3.6/site-packages` manually, then run the following commands
-        a. jupyter nbextension install --py --user nbtemplate
+       
+       a. jupyter nbextension install --py --user nbtemplate
         b. jupyter nbextension enable --py --user nbtemplate
 
 3. It would probably be better to update `setup.py` accordingly to make everything work more smoothly, but seeing as this is preliminary I opted to "take the path of least resistance" and do this all manually. 
