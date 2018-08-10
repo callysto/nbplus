@@ -4,6 +4,8 @@ requirejs.config({
     }
 });
 
+
+
 requirejs(["d3"], d3 => {
     var container = d3.select("div.container-fluid");
     var kernelIndicator = d3.select("#kernel_indicator");
@@ -106,11 +108,13 @@ requirejs(["d3"], d3 => {
         console.log("Make", numberOfRows, "rows ...");
         
         var paperWidth = (width - padding * (templatesPerRow + 1)) / templatesPerRow,
+            // A4 Paper? How European!
             paperHeight = Math.sqrt(2) * paperWidth;
 
         svg.attr("height", numberOfRows * (paperHeight + padding) + padding);
 
         var selectedTemplate;
+        // TODO: Fix the choose button (it doesn't know about i) 
         var chooseButton = d3.select("#chooseTemplate")
                              .attr("data-dismiss", null)
                              .on("click", function() {
@@ -121,6 +125,9 @@ requirejs(["d3"], d3 => {
                                  }
                              });
         
+        
+        
+        
         var rect = svg.selectAll("rect")
                           .data(templates)
                       .enter().append("rect")
@@ -129,6 +136,20 @@ requirejs(["d3"], d3 => {
                               .attr("width", paperWidth)
                               .attr("height", paperHeight)
                               .attr("fill", (d, i) => color(i));
+        // This adds text labels to the rectangles for selection
+        
+        var textLabels = ["Insert Banners", "Lab Template", "Nothing", "Nothing", "Nothing", "Nothing", 'Nothing', "Nothing"];
+        var addText = svg.selectAll('text').data(textLabels).enter().append("text");
+        
+        var textElements = addText
+      .attr("x", (d, i) => ((i % templatesPerRow) + 1) * padding +  paperWidth * (i % templatesPerRow) + paperWidth/2)
+      .attr("y", (d, i) => Math.floor(i / templatesPerRow) * paperHeight + padding * Math.floor(i / templatesPerRow) + padding +paperHeight/2)
+      .attr("font-family", "Arial Black")
+      .attr("font-size", "16px")
+      .attr("fill", "black")
+      .text(function(d, i){return d;});
+        
+        textElements.style("text-anchor", "middle");
         
         rect.on("click", function(d, i) {
             rect.style("stroke-width", 2)
@@ -146,7 +167,15 @@ requirejs(["d3"], d3 => {
             $(d3.select(this).node()).click();
             console.log("Make notebook from Template", i, "...");
             if (i === 0) {
-                $.getScript('src/js/add_banners.js', function() {});
+                // I added a function that does this. Granted, I don't think we need it because 
+                // I imagine it'll cause problems with other notebooks that already have the banners
+                // and it's kind of pointless... but anyways at least this works now. 
+                var inject_callysto_banners = insert_banners()
+            }
+            if (i === 1) {
+                // Inject the 'lab template' content via the second box. 
+                var inject = injectLabTemplate()
+                
             }
         });
     }
