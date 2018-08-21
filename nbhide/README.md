@@ -4,7 +4,8 @@ An extension for selective hiding of code and Markdown cells in Jupyter notebook
 In any code cell within a Jupyter notebook (Python 3),
 
 ```
-!pip install --upgrade --force-reinstall --user git+git://github.com/callysto/nbplus.git#egg=nbplus
+!pip install --upgrade --force-reinstall --user git+git://github.com/callysto/nbplus.git#egg=nbhide\&subdirectory=nbhide
+!jupyter nbextension install --py --user nbhide
 !jupyter nbextension enable --py --user nbhide
 ```
 
