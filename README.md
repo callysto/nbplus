@@ -4,16 +4,18 @@
 
 ## Getting Started
 
-All submodules are installed via the command line using
+Submodules are installed separately.
 
-`pip install --upgrade --force-reinstall --user git+git://github.com/callysto/nbplus.git#egg=nbplus`.
+Use the following command, replacing `<submodule>` with the name of a subdirectory in this repository:
 
-Once installed, submodules may be imported separately.
+`pip install --upgrade --force-reinstall --user git+git://github.com/callysto/nbplus.git#egg=<submodule>\&subdirectory=<submodule>`
+
+Once installed, import a submodule by referring to itself.
 
 e.g.
 
 ```python
-import nblayout.uiButtons
+from nbvis.classes import D3, Vis
 from geogebra.ggb import *
 ```
 
