@@ -16,13 +16,13 @@ def main():
         
         data_files=[
             # like `jupyter nbextension install --sys-prefix`
-            ("share/jupyter/nbextensions/nbtemplate", [
-                "nbtemplate/static/appendButtons.js",
+            ("share/jupyter/nbextensions/nbhide", [
+                "nbhide/static/appendButtons.js",
             ]),
             
             # like `jupyter nbextension install --sys-prefix`
-            ("share/jupyter/nbextensions/nbtemplate", [
-                "nbtemplate/static/appendToggles.js",
+            ("share/jupyter/nbextensions/nbhide", [
+                "nbhide/static/appendToggles.js",
             ]),
             
             # like `jupyter nbextension enable --sys-prefix`
