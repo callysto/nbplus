@@ -13,7 +13,27 @@ def main():
         author='Vincent Cote & Eric Easthope',
         packages=find_packages(),
         include_package_data=True,
-        install_requires=[]
+        
+        data_files=[
+            # like `jupyter nbextension install --sys-prefix`
+            ("share/jupyter/nbextensions/nbtemplate", [
+                "nbtemplate/static/appendButtons.js",
+            ]),
+            
+            # like `jupyter nbextension install --sys-prefix`
+            ("share/jupyter/nbextensions/nbtemplate", [
+                "nbtemplate/static/appendToggles.js",
+            ]),
+            
+            # like `jupyter nbextension enable --sys-prefix`
+            ("etc/jupyter/nbconfig/notebook.d", [
+                "jupyter-config/nbconfig/notebook.d/nbhide.json"
+            ]),
+            
+            # like `jupyter serverextension enable --sys-prefix`
+            ("etc/jupyter/jupyter_notebook_config.d", [
+                "jupyter-config/jupyter_notebook_config.d/nbhide.json"
+        ])
     )
 
 if __name__ == '__main__':
