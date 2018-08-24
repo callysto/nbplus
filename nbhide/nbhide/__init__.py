@@ -15,7 +15,7 @@ def _jupyter_nbextension_paths():
             section='notebook',
             src='static',                      # path is relative to `nbhide` directory
             dest='nbhide',                     # directory in `nbextension/` namespace
-            require='nbtemplate/appendToggles' # _also_ in `nbextension/` namespace
+            require='nbhide/appendToggles' # _also_ in `nbextension/` namespace
         )
     ];
 
