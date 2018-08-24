@@ -1,3 +1,4 @@
+%%js
 requirejs.config({
     "paths": {
         "d3": "//d3js.org/d3.v5.min"
@@ -64,12 +65,19 @@ requirejs(["d3"], d3 => {
         rect.on("mouseout", () => button.style("fill", "#777"));
         rect.on("click", function() {
             if (codeActive) {
+                d3.selectAll("label").transition().duration(250).style("opacity", 0)
                 codeCells.each(function () {
-                    $(d3.select(this).select(".input").node()).hide("250");
+                    var thisCell = Jupyter.notebook.get_cells().filter(c => c.element[0] === this)[0];
+                    if (thisCell._metadata.hidden) {
+                        $(d3.select(this).select(".input").node()).hide("250");
+                    }
                 });
                 codeActive = !codeActive;
             }
             else if (!codeActive) {
+                if (d3.event.altKey) {
+                    d3.selectAll("label").transition().duration(250).style("opacity", 1)
+                }
                 codeCells.each(function () {
                     $(d3.select(this).select(".input").node()).show("250");
                 });
@@ -102,14 +110,21 @@ requirejs(["d3"], d3 => {
         rect.on("mouseout", () => button.style("fill", "#777"));
         rect.on("click", function() {
             if (markdownActive) {
+                d3.selectAll("label").transition().duration(250).style("opacity", 0)
                 markdownCells.each(function () {
-                    $(d3.select(this).node()).hide('250');
+                    var thisCell = Jupyter.notebook.get_cells().filter(c => c.element[0] === this)[0];
+                    if (thisCell._metadata.hidden) {
+                        $(d3.select(this).select(".inner_cell").node()).hide("250");
+                    }
                 });
                 markdownActive = !markdownActive;
             }
             else if (!markdownActive) {
+                if (d3.event.altKey) {
+                    d3.selectAll("label").transition().duration(250).style("opacity", 1)
+                }
                 markdownCells.each(function () {
-                    $(d3.select(this).node()).show('250');
+                    $(d3.select(this).select(".inner_cell").node()).show('250');
                 });
                 markdownActive = !markdownActive;
             }
@@ -139,7 +154,6 @@ requirejs(["d3"], d3 => {
         rect.on("mouseover", () => button.style("fill", "#333"));
         rect.on("mouseout", () => button.style("fill", "#777"));
         rect.on("click", function() {
-          // Jupyter.notebook.kernel.interrupt();
           Jupyter.notebook.execute_all_cells();
         });
     });
