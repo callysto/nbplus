@@ -33,8 +33,8 @@ def main():
             # like `jupyter serverextension enable --sys-prefix`
             ("etc/jupyter/jupyter_notebook_config.d", [
                 "jupyter-config/jupyter_notebook_config.d/nbhide.json"
-        ])
-    )
+        ]
+            )
 
 if __name__ == '__main__':
     main()
