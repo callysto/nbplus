@@ -22,7 +22,7 @@ def main():
             
             # like `jupyter nbextension install --sys-prefix`
             ("share/jupyter/nbextensions/nbtemplate", [
-                "nbtemplate/static/selector.js",
+                "nbtemplate/static/templateSelector.js",
             ]),
             
             # like `jupyter nbextension enable --sys-prefix`
