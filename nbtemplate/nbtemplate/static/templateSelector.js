@@ -59,25 +59,27 @@ requirejs(["d3"], d3 => {
                                .style("fill", "#777");
     
     // set icon mouseover behaviour
-    templateIcon.on("mouseover", function () {
-        d3.select(this).style("fill", "#333");
-    });
+    templateIcon
+        .on("mouseover", function () {
+            d3.select(this).style("fill", "#333");
+        });
     
     // set icon mouseout behaviour
-    templateIcon.on("mouseout", function () {
-        d3.select(this).style("fill", "#777");
-    });
+    templateIcon
+        .on("mouseout", function () {
+            d3.select(this).style("fill", "#777");
+        });
     
     // add a mouseover tooltip for template icon
-    templateIcon.append("title")
-                .text("Add Template");
+    templateIcon
+        .append("title")
+        .text("Add Template");
     
     // show template selector via dialog popover when icon clicked
     templateIcon.on("click", showSelector);
     
     // initialize selected template and template index variables
-    var selectedTemplate;
-    var selectedIndex;
+    var selectedTemplate, selectedIndex;
     
     function showSelector() {
         
@@ -112,37 +114,42 @@ requirejs(["d3"], d3 => {
     function insertTemplate(templateUrl) {
         
         // get template notebook from URL
-        Promise.all([d3.json(templateUrl)])
-        .then(curriculum => {
-            // get notebook cells
-            var templateCells = curriculum[0].cells;
+        Promise
+            .all([d3.json(templateUrl)])
+            .then(curriculum => {
+            
+                // get notebook cells
+                var templateCells = curriculum[0].cells;
 
-            templateCells.forEach(cell => {
-                // get template cell type
-                var cellType = cell.cell_type
+                templateCells.forEach(cell => {
 
-                // get current notebook cells, get largest index
-                var allCells = Jupyter.notebook.get_cells(),
-                    indexOfLastCell = allCells.length - 1;
+                    // get template cell type
+                    var cellType = cell.cell_type
 
-                // create a clone of the template cell, insert at the bottom of the current notebook
-                var newCell = Jupyter.notebook.insert_cell_below(cellType, indexOfLastCell);
-                newCell.set_text(cell.source.join(""));
+                    // get current notebook cells, get largest index
+                    var allCells = Jupyter.notebook.get_cells(),
+                        indexOfLastCell = allCells.length - 1;
 
-                // execute the clone of the template cell
-                newCell.execute();
+                    // create a clone of the template cell, insert at the bottom of the current notebook
+                    var newCell = Jupyter.notebook.insert_cell_below(cellType, indexOfLastCell);
+                    newCell.set_text(cell.source.join(""));
+
+                    // execute the clone of the template cell
+                    newCell.execute();
+                });
             });
-        });
     }
     
     function createTemplateButtons(width, div, padding, paperWidth, paperHeight, numberOfRows, templatesPerRow) {
         
-        // append svg container with width of dialog popover,
-        // set height to fit all template buttons
-        var svg = d3.select(div)
-                        .append("svg")
-                        .attr("width", width)
-                        .attr("height", numberOfRows * (paperHeight + padding) + padding);
+        /* append svg container with width of dialog popover,
+           set height to fit all template buttons
+           */
+        var svg = d3
+                      .select(div)
+                          .append("svg")
+                              .attr("width", width)
+                              .attr("height", numberOfRows * (paperHeight + padding) + padding);
         
         // set colour scheme for unspecified templates
         var color = d3.scaleOrdinal(d3.schemePastel1);
@@ -154,33 +161,36 @@ requirejs(["d3"], d3 => {
                        .enter().append("rect")
                            .attr("x", (d, i) => (i % templatesPerRow + 1) *
                                                 padding + paperWidth * (i % templatesPerRow))
-                           .attr("y", (d, i) => Math.floor(i / templatesPerRow) *
+                           .attr("y", (d, i) => Math.floor(i/templatesPerRow) *
                                                 paperHeight + padding *
-                                                Math.floor(i / templatesPerRow) + padding)
+                                                Math.floor(i/templatesPerRow) + padding)
                            .attr("width", paperWidth)
                            .attr("height", paperHeight)
                            .attr("fill", (d, i) => color(i));
         
         // highlight a template button when clicked
-        rect.on("click", function(d, i) {            
-            rect
-                .style("stroke-width", 2)
-                .style("stroke", "#333")
-                .style("stroke-opacity", e => d.id === e.id ? 1 : 0);
-            selectedTemplate = d;
-            selectedIndex = i;
-        })
+        rect
+            .on("click", function(d, i) {            
+                rect
+                    .style("stroke-width", 2)
+                    .style("stroke", "#333")
+                    .style("stroke-opacity", e => d.id === e.id ? 1 : 0);
+                selectedTemplate = d;
+                selectedIndex = i;
+            });
         
         // select a template when its button is double-clicked
-        rect.on("dblclick", function(d, i) {
-            d3.select(this).attr("data-dismiss", "modal");
-            $(d3.select(this).node()).click();
-            console.log("Add templates from", selectedTemplate);
-            insertTemplate(d.url);
-        });
+        rect
+            .on("dblclick", function(d, i) {
+                d3.select(this).attr("data-dismiss", "modal");
+                $(d3.select(this).node()).click();
+                console.log("Add templates from", selectedTemplate);
+                insertTemplate(d.url);
+            });
         
         // add a mouseover tooltip for each template
-        rect.append("title")
+        rect
+            .append("title")
             .text(d => d.id);
     }
     
@@ -193,25 +203,26 @@ requirejs(["d3"], d3 => {
         // get the number of available templates
         var numberOfTemplates = templates.length,
             templatesPerRow = 4,
-            numberOfRows = Math.ceil(numberOfTemplates / templatesPerRow);
+            numberOfRows = Math.ceil(numberOfTemplates/templatesPerRow);
         
         // set width/height of template buttons to have the same aspect ratio as the icon
-        var paperWidth = (width - padding * (templatesPerRow + 1)) / templatesPerRow,
+        var paperWidth = (width - padding * (templatesPerRow + 1))/templatesPerRow,
             paperHeight = Math.sqrt(2) * paperWidth;
         
         createTemplateButtons(width, div, padding, paperWidth,
                               paperHeight, numberOfRows, templatesPerRow);
         
         // insert specified template elements when "Choose" button is clicked
-        var chooseButton = d3.select("#chooseTemplate")
-                                 .attr("data-dismiss", null)
-                                 .on("click", function() {
-                                     if (selectedTemplate) {
-                                         d3.select(this).attr("data-dismiss", "modal");
-                                         $(d3.select(this).node()).click();
-                                         console.log("Add templates from", selectedTemplate);
-                                         insertTemplate(selectedTemplate.url);
-                                     }
-                                 });
+        var chooseButton = d3
+                               .select("#chooseTemplate")
+                                   .attr("data-dismiss", null)
+                                   .on("click", function() {
+                                       if (selectedTemplate) {
+                                           d3.select(this).attr("data-dismiss", "modal");
+                                           $(d3.select(this).node()).click();
+                                           console.log("Add templates from", selectedTemplate);
+                                           insertTemplate(selectedTemplate.url);
+                                       }
+                                   });
     }
 });
