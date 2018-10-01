@@ -1,0 +1,41 @@
+[
+    {
+        "id": "add_banners",
+        "title": "Add the Callysto banners",
+        "text": "Add banners",
+        "click": "alert(\"Add banners!\");",
+        "submenu": []
+    },
+    
+    {
+        "id": "add_visualization",
+        "title": "Add a visualization block",
+        "text": "Add visualization",
+        "click": "",
+        "submenu": [
+            {
+                "id": "add_d3",
+                "title": "Insert an empty D3.js template via nbvis",
+                "text": "D3.js",
+                "click": "alert(\"Add D3.js block!\");",
+                "submenu": []
+            },
+            
+            {
+                "id": "add_geogebra",
+                "title": "Insert an empty GeoGebra template",
+                "text": "GeoGebra",
+                "click": "alert(\"Add GeoGebra block!\");",
+                "submenu": []
+            },
+            
+            {
+                "id": "add_mathbox",
+                "title": "Insert an empty MathBox.js template via nbvis",
+                "text": "MathBox.js",
+                "click": "alert(\"Add MathBox.js block!\");",
+                "submenu": []
+            }
+        ]
+    },
+]
