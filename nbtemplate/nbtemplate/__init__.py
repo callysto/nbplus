@@ -18,9 +18,15 @@ def _jupyter_nbextension_paths():
         ),
         dict(
             section='notebook',
-            src='static',                         # path is relative to `nbtemplate` directory
-            dest='nbtemplate',                    # directory in `nbextension/` namespace
-            require='nbtemplate/templateSelector' # _also_ in `nbextension/` namespace
+            src='static', 
+            dest='nbtemplate',
+            require='nbtemplate/templateSelector'
+        ),
+        dict(
+            section='notebook',
+            src='static',
+            dest='nbtemplate',
+            require='nbtemplate/blockSelector'
         )
     ];
 
