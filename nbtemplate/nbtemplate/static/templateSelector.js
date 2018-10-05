@@ -7,117 +7,107 @@ requirejs.config({ "paths": { "d3": "//d3js.org/d3.v5.min" } });
 
 // require D3.js, then implement the template selector
 requirejs(["d3"], d3 => {
-    
-    // specify arrangement and source URLs for notebook templates
-    var templates = [
-        {
-            id: "Curriculum Notebook",
-            url: "https://gist.githubusercontent.com/ericeasthope/3f5b7dc1fb7a3f96fbe8377e002017b4/raw/6142318a718b96b2d59448d9633189b40e317c8e/curriculum-notebook-template.ipynb"
-        },
-        { id: "secondTemplate" },
-        { id: "thirdTemplate" },
-        { id: "fourthTemplate" },
-        { id: "fifthTemplate" },
-        { id: "sixthTemplate" },
-        { id: "seventhTemplate" },
-        { id: "eighthTemplate" }
-    ];  
-    
-    // select menubar container
-    var container = d3.select("div.container-fluid");
-    var kernelIndicator = d3.select("#kernel_indicator");
-    
-    // get width of kernel indicator
-    var width = kernelIndicator
-                    .node()
-                        .getBoundingClientRect()
-                        .width;
-    
-    // get height of kernel indicator
-    var height = kernelIndicator
-                    .node()
-                        .getBoundingClientRect()
-                        .height;
-    
-    // insert container for template icon
-    var templateSelector = container
-                               .insert("svg", "#modal_indicator")
-                                   .attr("width", (1/Math.sqrt(2))*height)
-                                   .attr("height", height)
-                               .classed("navbar-text", true)
-                                   .style("float", "right")
-                                   .style("margin-left", "5px")
-                                   .style("margin-right", "5px");
-    
-    // append a rectangle with an aspect ratio of square root of 2 (ISO)
-    var templateIcon = templateSelector
-                           .append("rect")
-                               .attr("x", 0)
-                               .attr("y", 0)
-                               .attr("width", (1/Math.sqrt(2))*height)
-                               .attr("height", height)
-                               .style("fill", "#777");
-    
-    // set icon mouseover behaviour
-    templateIcon
-        .on("mouseover", function () {
-            d3.select(this).style("fill", "#333");
-        });
-    
-    // set icon mouseout behaviour
-    templateIcon
-        .on("mouseout", function () {
-            d3.select(this).style("fill", "#777");
-        });
-    
-    // add a mouseover tooltip for template icon
-    templateIcon
-        .append("title")
-        .text("Add Template");
-    
-    // show template selector via dialog popover when icon clicked
-    templateIcon.on("click", showSelector);
-    
-    // initialize selected template and template index variables
-    var selectedTemplate, selectedIndex;
-    
-    function showSelector() {
-        
-        requirejs(["base/js/dialog"], function(dialog) {
-            var div = document.createElement("div");
-            d3.select(div)
-              .attr("id", "template-wrapper");
-            
-            var popup = dialog.modal({
-                title: 'Select a Template',
-                body: div,
-                buttons: {
-                    'Choose': { id: 'chooseTemplate' },
-                    'Close': {}
-                },
-                notebook: Jupyter.notebook,
-                keyboard_manager: Jupyter.keyboard_manager
-            });
-            
-            getDialogWidth();
-            function getDialogWidth() {
-                if (!$("div.modal-body").width()) {
-                    window.requestAnimationFrame(getDialogWidth);
-                }
-                else {
-                    loadTemplates($("div.modal-body").width(), div);
-                };
-            };
-        });
+
+    d3.json("https://raw.githubusercontent.com/callysto/notebook-templates/master/templateConfig.json").then(function(config) {
+
+      // specify arrangement and source URLs for notebook templates
+      var templates = config.templates;
+
+      // select menubar container
+      var container = d3.select("div.container-fluid");
+      var kernelIndicator = d3.select("#kernel_indicator");
+
+      // get width of kernel indicator
+      var width = kernelIndicator
+                      .node()
+                          .getBoundingClientRect()
+                          .width;
+
+      // get height of kernel indicator
+      var height = kernelIndicator
+                      .node()
+                          .getBoundingClientRect()
+                          .height;
+
+      // insert container for template icon
+      var templateSelector = container
+                                 .insert("svg", "#modal_indicator")
+                                     .attr("width", (1/Math.sqrt(2))*height)
+                                     .attr("height", height)
+                                 .classed("navbar-text", true)
+                                     .style("float", "right")
+                                     .style("margin-left", "5px")
+                                     .style("margin-right", "5px");
+
+      // append a rectangle with an aspect ratio of square root of 2 (ISO)
+      var templateIcon = templateSelector
+                             .append("rect")
+                                 .attr("x", 0)
+                                 .attr("y", 0)
+                                 .attr("width", (1/Math.sqrt(2))*height)
+                                 .attr("height", height)
+                                 .style("fill", "#777");
+
+      // set icon mouseover behaviour
+      templateIcon
+          .on("mouseover", function () {
+              d3.select(this).style("fill", "#333");
+          });
+
+      // set icon mouseout behaviour
+      templateIcon
+          .on("mouseout", function () {
+              d3.select(this).style("fill", "#777");
+          });
+
+      // add a mouseover tooltip for template icon
+      templateIcon
+          .append("title")
+          .text("Add Template");
+
+      // show template selector via dialog popover when icon clicked
+      templateIcon.on("click", showSelector);
+
+      // initialize selected template and template index variables
+      var selectedTemplate, selectedIndex;
+
+      function showSelector() {
+
+          requirejs(["base/js/dialog"], function(dialog) {
+              var div = document.createElement("div");
+              d3.select(div)
+                .attr("id", "template-wrapper");
+
+              var popup = dialog.modal({
+                  title: 'Select a Template',
+                  body: div,
+                  buttons: {
+                      'Choose': { id: 'chooseTemplate' },
+                      'Close': {}
+                  },
+                  notebook: Jupyter.notebook,
+                  keyboard_manager: Jupyter.keyboard_manager
+              });
+
+              getDialogWidth();
+              function getDialogWidth() {
+                  if (!$("div.modal-body").width()) {
+                      window.requestAnimationFrame(getDialogWidth);
+                  }
+                  else {
+                      loadTemplates($("div.modal-body").width(), div);
+                  };
+              };
+          });
     }
-    
+
     function insertTemplate(templateUrl) {
-        
+
         // get template notebook from URL
         Promise
             .all([d3.json(templateUrl)])
             .then(curriculum => {
-            
+
                 // get notebook cells
                 var templateCells = curriculum[0].cells;
 
@@ -139,9 +129,9 @@ requirejs(["d3"], d3 => {
                 });
             });
     }
-    
+
     function createTemplateButtons(width, div, padding, paperWidth, paperHeight, numberOfRows, templatesPerRow) {
-        
+
         /* append svg container with width of dialog popover,
            set height to fit all template buttons
            */
@@ -150,10 +140,10 @@ requirejs(["d3"], d3 => {
                           .append("svg")
                               .attr("width", width)
                               .attr("height", numberOfRows * (paperHeight + padding) + padding);
-        
+
         // set colour scheme for unspecified templates
         var color = d3.scaleOrdinal(d3.schemePastel1);
-        
+
         // append evenly spaced rectangles for each template
         var rect = svg
                        .selectAll("rect")
@@ -167,10 +157,10 @@ requirejs(["d3"], d3 => {
                            .attr("width", paperWidth)
                            .attr("height", paperHeight)
                            .attr("fill", (d, i) => color(i));
-        
+
         // highlight a template button when clicked
         rect
-            .on("click", function(d, i) {            
+            .on("click", function(d, i) {
                 rect
                     .style("stroke-width", 2)
                     .style("stroke", "#333")
@@ -178,7 +168,7 @@ requirejs(["d3"], d3 => {
                 selectedTemplate = d;
                 selectedIndex = i;
             });
-        
+
         // select a template when its button is double-clicked
         rect
             .on("dblclick", function(d, i) {
@@ -187,31 +177,31 @@ requirejs(["d3"], d3 => {
                 console.log("Add templates from", selectedTemplate);
                 insertTemplate(d.url);
             });
-        
+
         // add a mouseover tooltip for each template
         rect
             .append("title")
             .text(d => d.id);
     }
-    
+
     function loadTemplates(width, div) {
-        
+
         // use the same padding on the dialog popover as the notebook container
         var padding = parseInt(d3.select("div#notebook-container")
                                  .style("padding"), 10);
-        
+
         // get the number of available templates
         var numberOfTemplates = templates.length,
             templatesPerRow = 4,
             numberOfRows = Math.ceil(numberOfTemplates/templatesPerRow);
-        
+
         // set width/height of template buttons to have the same aspect ratio as the icon
         var paperWidth = (width - padding * (templatesPerRow + 1))/templatesPerRow,
             paperHeight = Math.sqrt(2) * paperWidth;
-        
+
         createTemplateButtons(width, div, padding, paperWidth,
                               paperHeight, numberOfRows, templatesPerRow);
-        
+
         // insert specified template elements when "Choose" button is clicked
         var chooseButton = d3
                                .select("#chooseTemplate")
@@ -225,4 +215,5 @@ requirejs(["d3"], d3 => {
                                        }
                                    });
     }
+  });
 });
