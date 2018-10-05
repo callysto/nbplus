@@ -4,7 +4,7 @@ requirejs.config({ "paths": { "d3": "//d3js.org/d3.v5.min" } });
 // require D3.js, then implement the template selector
 requirejs(["d3"], d3 => {
     d3.json("https://raw.githubusercontent.com/callysto/notebook-templates/master/blockConfig.json").then(function(config) {
-        
+
         var blocksConfig = config.blocks;
         var blocksButton = $("ul.nav.navbar-nav");
         var blocksDropdown = $("<li/>")
@@ -29,7 +29,33 @@ requirejs(["d3"], d3 => {
             for (var key in obj) {
                 if (key === "id" || key === "title") listItem.attr(key, obj[key]);
                 if (key === "text") listLink.text(obj[key]);
-                if (key === "click") listLink.on(key, new Function(obj[key]));
+                if (key === "url") listLink.on("click", function() {
+                  // get template notebook from URL
+                  Promise
+                      .all([d3.json(obj["url"])])
+                      .then(curriculum => {
+
+                          // get notebook cells
+                          var templateCells = curriculum[0].cells;
+
+                          templateCells.forEach(cell => {
+
+                              // get template cell type
+                              var cellType = cell.cell_type
+
+                              // get current notebook cells, get largest index
+                              var allCells = Jupyter.notebook.get_cells(),
+                                  indexOfLastCell = allCells.length - 1;
+
+                              // create a clone of the template cell, insert at the bottom of the current notebook
+                              var newCell = Jupyter.notebook.insert_cell_below(cellType, indexOfLastCell);
+                              newCell.set_text(cell.source.join(""));
+
+                              // execute the clone of the template cell
+                              newCell.execute();
+                          });
+                      });
+                });
             }
 
             if (obj["submenu"].length > 0) {
