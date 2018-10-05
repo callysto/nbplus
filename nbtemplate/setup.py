@@ -29,11 +29,6 @@ def main():
             ("share/jupyter/nbextensions/nbtemplate", [
                 "nbtemplate/static/blockSelector.js",
             ]),
-
-	    # like `jupyter nbextension install --sys-prefix`
-            ("share/jupyter/nbextensions/nbtemplate", [
-                "nbtemplate/static/blockConfig.json",
-            ]),
             
             # like `jupyter nbextension enable --sys-prefix`
             ("etc/jupyter/nbconfig/notebook.d", [
