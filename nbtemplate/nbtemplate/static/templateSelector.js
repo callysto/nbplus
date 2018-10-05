@@ -9,7 +9,7 @@ requirejs.config({ "paths": { "d3": "//d3js.org/d3.v5.min" } });
 requirejs(["d3"], d3 => {
 
     d3.json("https://raw.githubusercontent.com/callysto/notebook-templates/master/templateConfig.json").then(function(config) {
-
+      
       // specify arrangement and source URLs for notebook templates
       var templates = config.templates;
 
