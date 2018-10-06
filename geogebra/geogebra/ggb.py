@@ -44,8 +44,6 @@ class GGBOptions():
     def isStringType(key):
         return key in [
             'appName',
-            'width',
-            'height',
             'material_id',
             'filename',
             'ggBase64',
@@ -68,11 +66,6 @@ class GGBOptions():
             'height',
             'capturingThreshold',
             'scale',
-            'showAnimationButton',
-            'showFullscreenButton',
-            'showSuggestionButtons',
-            'showStartTooltip',
-            'butonShadows',
             'buttonRounding'
         ]
 
@@ -96,7 +89,12 @@ class GGBOptions():
             'enableCAS',
             'preventFocus',
             'allowUpscale',
-            'playButton'
+            'playButton',
+            'showAnimationButton',
+            'showFullscreenButton',
+            'showSuggestionButtons',
+            'showStartTooltip',
+            'buttonShadows'
         ]
 
 
