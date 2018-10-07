@@ -328,7 +328,9 @@ class GGBApi():
     @staticmethod
     def isSetter(fn):
         return fn in [
+            'setUndoPoint',
             'deleteObject',
+            'renameObject',
             'setAuxiliary',
             'setCaption',
             'setColor',
@@ -365,7 +367,6 @@ class GGBApi():
             'setErrorDialogsActive',
             'setCoordSystem',
             'setAxesVisible',
-            'setAxesVisible',
             'setAxisLabels',
             'setAxisSteps',
             'setAxisUnits',
@@ -386,13 +387,19 @@ class GGBApi():
             'setWidth',
             'setHeight',
             'setSize',
-            'recalculateEnvironments'
+            'recalculateEnvironments',
+            'setBase64',
+            'openFile',
+            'evalXML',
+            'setXML',
+            'debug'
         ]
 
     # Short aliases for the setter methods.
     @staticmethod
     def isSetterShort(fn):
         short = {
+            'UndoPoint': 'setUndoPoint',
             'Auxiliary': 'setAuxiliary',
             'Caption': 'setCaption',
             'Color': 'setColor',
@@ -431,7 +438,9 @@ class GGBApi():
             'Perspective': 'setPerspective',
             'Width': 'setWidth',
             'Height': 'setHeight',
-            'Size': 'setSize'
+            'Size': 'setSize',
+            'Base64': 'setBase64',
+            'XML': 'setXML'
         }
         if fn in short:
             return short[fn]
@@ -441,11 +450,14 @@ class GGBApi():
     @staticmethod
     def isGetter(fn):
         return fn in [
-            'renameObject',
+            'evalCommand',
+            'evalCommandGetLabels',
+            'evalCommandCAS',
             'getPNGBase64',
             'writePNGtoFile',
             'isIndependent',
             'isMoveable',
+            'getBase64',
             'isAnimationRunning',
             'getXcoord',
             'getYcoord',
@@ -476,7 +488,13 @@ class GGBApi():
             'getLabelVisible',
             'getMode',
             'getGridVisible',
-            'getPerspectiveXML'
+            'getPerspectiveXML',
+            'getXML',
+            'getAlgorithmXML',
+            'getVersion',
+            'getExerciseResult',
+            'getExerciseFraction',
+            'startExercise'
         ]
 
     # Short aliases for the getter methods.
@@ -484,6 +502,7 @@ class GGBApi():
     def isGetterShort(fn):
         short = {
             'PNGBase64': 'getPNGBase64',
+            'Base64': 'getBase64',
             'Xcoord': 'getXcoord',
             'Ycoord': 'getYcoord',
             'Zcoord': 'getZcoord',
@@ -511,7 +530,12 @@ class GGBApi():
             'LabelVisible': 'getLabelVisible',
             'Mode': 'getMode',
             'GridVisible': 'getGridVisible',
-            'PerspectiveXML': 'getPerspectiveXML'
+            'PerspectiveXML': 'getPerspectiveXML',
+            'XML': 'getXML',
+            'AlgorithmXML': 'getAlgorithmXML',
+            'Version': 'getVersion',
+            'ExerciseResult': 'getExerciseResult',
+            'ExerciseFraction': 'getExerciseFraction'
         }
         if fn in short:
             return short[fn]
