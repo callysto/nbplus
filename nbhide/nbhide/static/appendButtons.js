@@ -22,7 +22,7 @@ requirejs(["d3"], d3 => {
         },
         {
             id: "play",
-            title: "Run All Cells",
+            title: "Play Notebook",
             url: "https://ionicons.com/ionicons/svg/md-play.svg"
         }
     ];
