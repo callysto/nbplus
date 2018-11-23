@@ -22,7 +22,7 @@ requirejs(["d3"], d3 => {
         },
         {
             id: "play",
-            title: "Run All Cells",
+            title: "Play Notebook",
             url: "https://ionicons.com/ionicons/svg/md-play.svg"
         }
     ];
@@ -198,7 +198,28 @@ requirejs(["d3"], d3 => {
     }
 
     function togglePlay() {
-        Jupyter.notebook.execute_all_cells();
+       var cells = Jupyter.notebook.get_cells();
+
+       // code cells, counter for code cell executions
+       var codeCells = cells.filter(c => c.cell_type == "code"), 
+           markdownCells = cells.filter(c => c.cell_type == "markdown");
+       
+       var codeCellsExecuted = 0;
+       
+       // render markdown cells, execute code cells
+       for (var i=0; i<markdownCells.length; i++) markdownCells[i].render();
+       for (var i=0; i<codeCells.length; i++) codeCells[i].execute();
+       
+       Jupyter.notebook.events.on("kernel_idle.Kernel", () => {
+          if (codeCellsExecuted < codeCells.length) {
+             var cell = codeCells[codeCellsExecuted];
+             codeCellsExecuted++;
+             document.getElementById("site").scrollTo({
+                top: cell.element[0].offsetTop,
+                behavior: "smooth"
+             });
+          }
+       });
     }
     
     function showToggles(show) {
