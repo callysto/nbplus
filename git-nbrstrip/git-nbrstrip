@@ -1,0 +1,65 @@
+#!/bin/bash
+
+set -e
+
+END="$(git log -1 --pretty=%H)"
+
+if ! [ -z "$(git status --untracked-files=no --porcelain)" ]; then
+    echo "Git tree is unclean -- commit or stash your changes before proceeding"
+    exit 1
+fi
+
+recover() {
+    git reset --hard "$END"
+}
+
+trap "recover" SIGINT SIGTERM ERR
+
+RANGE="@{upstream}..$END"
+
+if [ -n "$1" ]; then
+    if echo $1 | grep -E '[.][.]' &>/dev/null ; then
+        RANGE="$1"
+    else
+	RANGE="$1..$END"
+    fi
+fi
+
+get_touched_notebooks() {
+    git log --pretty=%H "$RANGE" | while read SHA; do
+	git diff-tree --no-commit-id --name-only -r "$SHA"
+    done | grep '[.]ipynb$' | sort | uniq
+}
+
+NBS="$(get_touched_notebooks)"
+
+START="$(echo "$RANGE" | sed 's/[.][.].*$//')"
+git reset --hard "$START" > /dev/null
+
+stripnbs() {
+    echo "$NBS" | while IFS='' read FILE; do
+	if [ -e "$FILE" ]; then
+	    echo "Stripping \"$FILE\""
+	    nbstripout "$FILE"
+	fi
+    done
+}
+
+echo "Performing initial strip operation"
+stripnbs
+
+git commit -a -F- <<EOCOMMITMESSAGE
+Strip output from below files, to make subsequent commits easier to read:
+
+$NBS
+EOCOMMITMESSAGE
+
+git log --reverse --pretty=%H "$RANGE" | while read SHA; do
+    echo "Recreating $SHA without output"
+    HEAD="$(git log -1 --pretty=%H)"
+    git reset --hard "$SHA" > /dev/null
+    git reset "$HEAD" > /dev/null
+    stripnbs
+    git commit -a -C"$SHA" > /dev/null
+done
+
