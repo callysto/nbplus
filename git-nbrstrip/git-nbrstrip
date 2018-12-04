@@ -9,6 +9,11 @@ if ! [ -z "$(git status --untracked-files=no --porcelain)" ]; then
     exit 1
 fi
 
+if ! [ -x "$(which nbstripout)" ]; then
+    echo "nbstripout does not appear to be available -- install it before proceeding"
+    exit 2
+fi
+
 recover() {
     git reset --hard "$END"
 }
