@@ -58,11 +58,18 @@ Strip output from below files, to make subsequent commits easier to read:
 $NBS
 EOCOMMITMESSAGE
 
-git log --reverse --pretty=%H "$RANGE" | while read SHA; do
-    echo "Recreating $SHA without output"
+reset_working_tree() {
+    local SHA=$1
     HEAD="$(git log -1 --pretty=%H)"
     git reset --hard "$SHA" > /dev/null
     git reset "$HEAD" > /dev/null
+}
+
+git log --topo-order --reverse --pretty=%H "$RANGE" | while read SHA; do
+    echo "Recreating $SHA without output"
+
+    reset_working_tree "$SHA"
+
     stripnbs
     git commit -a -C"$SHA" > /dev/null
 done
