@@ -52,8 +52,7 @@ stripnbs() {
 
 echo "Performing initial strip operation"
 stripnbs
-
-git commit -a -F- <<EOCOMMITMESSAGE
+git commit -a -F- <<EOCOMMITMESSAGE || true
 Strip output from below files, to make subsequent commits easier to read:
 
 $NBS
