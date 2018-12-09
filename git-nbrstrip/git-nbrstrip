@@ -1,0 +1,141 @@
+#!/bin/bash
+
+# git-nbrstrip -- Ranged strips for Jupyter notebooks
+#
+# git-nbrstrip will remove generated output content from Jupyter
+# notebooks across a range of git commits -- by default, all commits
+# in your branch since your tracking branch ("@{upstream}")
+#
+# This is helpful in adhering to a good RCS rule-of-thumb: Nothing
+# should ever be stored in your RCS that can be generated from
+# something else stored in your RCS.
+#
+# That's helpful in ensuring that nothing in your repository is ever
+# out of sync with something else. It's also helpful in making your
+# commits be relatively small and consise, making them easier to
+# review and understand.
+#
+# The script will create one initial commit that removes all output
+# from the files your commit range modifies, followed by recreated
+# versions of each commit in the range, but with output likewise
+# stripped from them.
+
+# Exit if anything goes wrong -- see below for error handler that
+# recovers the state.
+set -e
+
+# Record the last commit we want to make sure is represented in our
+# history.
+END="$(git log -1 --pretty=%H)"
+
+# Terminate early if there's any changes still to be commited -- those
+# changes are likely to be lost if we're re-writing git commit
+# history.
+if ! [ -z "$(git status --untracked-files=no --porcelain)" ]; then
+    echo "Git tree is unclean -- commit or stash your changes before proceeding"
+    exit 1
+fi
+
+# This script has a hard dependency on the nbstripout utility -- see:
+# https://github.com/kynan/nbstripout
+if ! [ -x "$(which nbstripout)" ]; then
+    echo "nbstripout does not appear to be available -- install it before proceeding"
+    exit 2
+fi
+
+# In the event of a failure (either associated with the 'set -e'
+# setting above, or due to the script being terminated by Ctrl-C or
+# similar, restore the repository to the state we started in.
+recover() {
+    git reset --hard "$END"
+}
+trap "recover" SIGINT SIGTERM ERR
+
+# By default, operate on the commits produced since we diverged from
+# the tracking branch, but allow a different starting commit or range.
+RANGE="@{upstream}..$END"
+
+if [ -n "$1" ]; then
+    if echo $1 | grep -E '[.][.]' &>/dev/null ; then
+        RANGE="$1"
+    else
+	RANGE="$1..$END"
+    fi
+fi
+
+# Record the set of all files modified in this git range (including
+# files which change and then change back).
+get_touched_notebooks() {
+    git log --pretty=%H "$RANGE" | while read SHA; do
+	git diff-tree --no-commit-id --name-only -r "$SHA"
+    done | grep '[.]ipynb$' | sort | uniq
+}
+NBS="$(get_touched_notebooks)"
+
+# Move our git repository to just before the selected range.
+START="$(echo "$RANGE" | sed 's/[.][.].*$//')"
+git reset --hard "$START" > /dev/null
+
+
+# Function to strip output from all the notebooks that have been
+# modified (if they exist at this point in history)
+stripnbs() {
+    echo "$NBS" | while IFS='' read FILE; do
+	if [ -e "$FILE" ]; then
+	    echo "Stripping \"$FILE\""
+	    nbstripout "$FILE"
+	fi
+    done
+}
+
+# Strip output from all modified files initially, so the subsequent
+# commits are simpler and cleaner
+echo "Performing initial strip operation"
+stripnbs
+git commit -a -F- <<EOCOMMITMESSAGE || true
+Strip output from below files, to make subsequent commits easier to read:
+
+$NBS
+EOCOMMITMESSAGE
+
+# Utility to reset the working tree contents to a selected sha, while
+# keeping the git repository pointed at the same commit. Done by a
+# hard-reset (to get the correct content) followed by a normal reset
+# (which restores the index/HEAD)
+reset_working_tree() {
+    local SHA=$1
+    HEAD="$(git log -1 --pretty=%H)"
+    git reset --hard "$SHA" > /dev/null
+    git reset "$HEAD" > /dev/null
+}
+
+# Iterate over all the commits in our range, in the order they are in
+# the commit tree
+git log --topo-order --reverse --pretty=%H "$RANGE" | while read SHA; do
+    echo "Recreating $SHA without output"
+
+    # Restore the content that was in this commit
+    reset_working_tree "$SHA"
+
+    # Strip output from all modified files. This restores the work
+    # done in the preceeding git history, as well as the work produced
+    # in the current SHA, leaving the git differences as just the new
+    # work in the current SHA, without any generated output.
+    stripnbs
+
+    # Create a new git commit with the metadata from the commit we're re-creating.
+    git commit -a -C"$SHA" > /dev/null
+done
+
+# At this point, we're finished. We can now as a sanity check verify
+# that we have all the content we started with, and flag a warning if
+# there is any missing content.
+
+reset_working_tree "$END"
+stripnbs
+if ! [ -z "$(git status --untracked-files=no --porcelain)" ]; then
+    echo "Error: modified files are still present in the repository. This should not happen. Consider filing a bug."
+    echo "You can either choose to continue from this point (by commiting the modified files), or revert back to where you started by running:"
+    echo
+    echo "git reset --hard $END"
+fi

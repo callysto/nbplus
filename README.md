@@ -4,9 +4,14 @@
 
 ## Getting Started
 
-Submodules are installed separately.
+Submodules are installed separately. Available submodules are:
 
-Use the following command, replacing `<submodule>` with the name of a subdirectory in this repository:
+* `geogebra`
+* `nbhide`
+* `nbvis`
+* `nbtemplate`
+
+Use the following command, replacing `<submodule>` with the name of one of the submodules above:
 
 `pip install --upgrade --force-reinstall --user git+git://github.com/callysto/nbplus.git#egg=<submodule>\&subdirectory=<submodule>`
 

@@ -39,13 +39,16 @@ class GGBOptions():
         self.paramsString = ', '.join(self.paramsList)
         return self.paramsString
 
+    # A helper method for setting options.
+    def setOption(self, name: str, value):
+        self.params[name] = value
+        return self
+
     # A few crudely made typechecking methods. It's likely this will change.
     @staticmethod
     def isStringType(key):
         return key in [
             'appName',
-            'width',
-            'height',
             'material_id',
             'filename',
             'ggBase64',
@@ -68,11 +71,6 @@ class GGBOptions():
             'height',
             'capturingThreshold',
             'scale',
-            'showAnimationButton',
-            'showFullscreenButton',
-            'showSuggestionButtons',
-            'showStartTooltip',
-            'butonShadows',
             'buttonRounding'
         ]
 
@@ -96,7 +94,12 @@ class GGBOptions():
             'enableCAS',
             'preventFocus',
             'allowUpscale',
-            'playButton'
+            'playButton',
+            'showAnimationButton',
+            'showFullscreenButton',
+            'showSuggestionButtons',
+            'showStartTooltip',
+            'buttonShadows'
         ]
 
 
@@ -110,14 +113,58 @@ class GGB(GGBOptions):
         self.lastBlueprint = ''
 
         ggbRequire = ('''
-            require.config({
+            window.ggbRequireStatus = 'loading';
+            requirejs.config({
                 paths: {
                     ggb: "https://cdn.geogebra.org/apps/deployggb"
                 }
             });
 
-            require(["ggb"]);
+            window.safeGGB = function safeGGB(counter, cb) {
+                if (window.ggbRequireStatus == 'failed') {
+                    console.log('panic-failed');
+                }
+
+                if (window.ggbRequireStatus == 'loading') {
+                    if (counter > 0) {
+                        console.log('in-loop' + counter);
+                        counter = counter-1;
+                        setTimeout(() => safeGGB(counter, cb), 2000);
+                    } else {
+                        console.log('panic-timeout');
+                    }
+                } else if (window.ggbRequireStatus == 'loaded') {
+                    cb();
+                }
+
+            }
+
+            requirejs(
+                ["ggb"],
+                () => {
+                    window.ggbRequireStatus = 'loaded';
+                    console.log('loaded');
+                    return;
+                },
+                (err) => {
+                    if (err.requireModules) {
+                        window.ggbRequireStatus = 'failed';
+                        console.error("There was an error while downloading one or more required Javascript Libraries.");
+                        err.requireModules.forEach(failedItem => {
+                            console.error("Failed to load: " + failedItem);
+                            $('#ggbLoadMsg').append('<p>Failed to load: ' + failedItem + '</p>');
+                        });
+                        $('#ggbLoadMsg').append('<p>Please check your internet connection.</p>');
+                        $('#ggbLoadMsg').css({'color':'red', 'font-size':'150%'});
+                    }
+                }
+            );
+
+            console.log(window.ggbRequireStatus);
         ''')
+
+        display(HTML('<div id=\"ggbLoadMsg\"></div>'))
+
         display(Javascript(ggbRequire))
         return
 
@@ -129,7 +176,7 @@ class GGB(GGBOptions):
         else:
             self.lastBlueprint = 'ggb_' + instanceName
 
-        self.blueprintDB[self.lastBlueprint] = GGBBlueprint(source, type=type, instanceName=self.lastBlueprint, params=super().asDict().copy())
+        self.blueprintDB[self.lastBlueprint] = GGBBlueprint(source, type=type, instanceName=self.lastBlueprint, params=self.asDict().copy())
         return self.blueprintDB[self.lastBlueprint]
 
     # Generates a Blueprint object from a .ggb file.
@@ -147,11 +194,6 @@ class GGB(GGBOptions):
     # Generates a Blueprint object for a standard app.
     def app(self, name='classic', instanceName=''):
         return self.src(name, 'appName', instanceName)
-
-    # A helper method for setting global default options.
-    def setOption(self, name: str, value):
-        self.params[name] = value
-        return self
 
     # A general method that accepts a sequence of key=value pairs and uses them
     # to set global default options. Once these are set then all Blueprints
@@ -180,6 +222,14 @@ class GGB(GGBOptions):
         display(Javascript('IPython.notebook.kernel.execute("%s=" + %s)' % (pVarName, jsVarName)))
         return
 
+    @staticmethod
+    def renderJS(code):
+        display(Javascript(
+            'window.safeGGB(5, () => {\n'
+            + code +
+            '\n})'
+            )
+        )
 
 # The Blueprint class contains settings and information needed to generate
 # instances of a geogebra applet to the page (by generating Drawing objects).
@@ -195,11 +245,6 @@ class GGBBlueprint(GGBOptions):
 
         self.params[type] = '\"%s\"' % source
         return
-
-    # A helper method for setting options for the Blueprint.
-    def setOption(self, name: str, value):
-        self.params[name] = value
-        return self
 
     # A convenience method for setting the width option.
     def width(self, width: int):
@@ -231,7 +276,7 @@ class GGBBlueprint(GGBOptions):
         self.lastDrawing = self.instanceName + '_' + str(self.counter) + 'e'
         self.counter += 1
 
-        self.drawingDB[self.lastDrawing] = GGBDrawing(super().asDict().copy(), self.lastDrawing)
+        self.drawingDB[self.lastDrawing] = GGBDrawing(self.asDict().copy(), self.lastDrawing)
 
         return self.drawingDB[self.lastDrawing]
 
@@ -251,9 +296,15 @@ class GGBDrawing(GGBOptions):
 
         display(HTML('<div id=\"%s\"></div>' % self.instanceName))
 
-        display(Javascript(
-            'var %s = new GGBApplet({%s}, \"%s\", false); %s.inject(); ' % (self.instanceName, super().asString(), self.instanceName, self.instanceName)
-        ))
+
+        GGB.renderJS(
+            'var %s = new GGBApplet({%s}, \"%s\", false);\n %s.inject();\n' % (self.instanceName, self.asString(), self.instanceName, self.instanceName)
+        )
+
+
+        # display(Javascript(
+        #     'var %s = new GGBApplet({%s}, \"%s\", false); %s.inject(); ' % (self.instanceName, self.asString(), self.instanceName, self.instanceName)
+        # ))
         return
 
     # Just a dummy method to suppress output on Jupyter cells without the
@@ -264,7 +315,11 @@ class GGBDrawing(GGBOptions):
     # Convenience method and proof of concept that sets an object in a
     # Geogebra render to either visible or invisible.
     def setVisible(self, obj, tf):
-        display(Javascript('%s.setVisible(\"%s\", %s)' % (self.instanceName, obj, str(tf).lower())))
+        GGB.renderJS(
+            '%s.setVisible(\"%s\", %s);\n' % (self.instanceName, obj, str(tf).lower())
+        )
+
+        # display(Javascript('%s.setVisible(\"%s\", %s)' % (self.instanceName, obj, str(tf).lower())))
         return self
 
     # A method for making setter-style API calls that don't return anything.
@@ -284,7 +339,11 @@ class GGBDrawing(GGBOptions):
                     jsArgs.append('\"%s\"' % arg)
             jsArgsString = ', '.join(jsArgs)
 
-            display(Javascript('%s.%s(%s)' % (self.instanceName, fn, jsArgsString)))
+            GGB.renderJS(
+                '%s.%s(%s);\n' % (self.instanceName, fn, jsArgsString)
+            )
+
+            # display(Javascript('%s.%s(%s)' % (self.instanceName, fn, jsArgsString)))
         return self
 
     # A method for making getter-style API calls that assign the returned Value
@@ -304,8 +363,9 @@ class GGBDrawing(GGBOptions):
                 else:
                     jsArgs.append('\"%s\"' % arg)
             jsArgsString = ', '.join(jsArgs)
-            display(Javascript(
-                'var tempVarOut = "";\n' + 'var tempVar = %s.%s(%s);' % (self.instanceName, fn, jsArgsString) + '''
+
+            GGB.renderJS(
+                'var tempVarOut = "";\n' + 'var tempVar = %s.%s(%s);\n' % (self.instanceName, fn, jsArgsString) + '''
                 if (typeof(tempVar) === "number") {
                     tempVarOut = tempVar;
                 } else if (typeof(tempVar) === "boolean") {
@@ -315,8 +375,22 @@ class GGBDrawing(GGBOptions):
                 } else if (Array.isArray(tempVar)) {
                     tempVarOut = '[' + tempVar.toString() + ']';
                 }
-                ''' + 'console.log(tempVarOut); IPython.notebook.kernel.execute("%s=" + tempVarOut);' % pVarName)
+                ''' + 'console.log(tempVarOut); IPython.notebook.kernel.execute("%s=" + tempVarOut);\n' % pVarName
             )
+
+            # display(Javascript(
+            #     'var tempVarOut = "";\n' + 'var tempVar = %s.%s(%s);' % (self.instanceName, fn, jsArgsString) + '''
+            #     if (typeof(tempVar) === "number") {
+            #         tempVarOut = tempVar;
+            #     } else if (typeof(tempVar) === "boolean") {
+            #         tempVarOut = tempVar ? 'True' : 'False';
+            #     } else if (typeof(tempVar) === "string") {
+            #         tempVarOut = '"' + tempVar + '"';
+            #     } else if (Array.isArray(tempVar)) {
+            #         tempVarOut = '[' + tempVar.toString() + ']';
+            #     }
+            #     ''' + 'console.log(tempVarOut); IPython.notebook.kernel.execute("%s=" + tempVarOut);' % pVarName)
+            # )
         return self
 
 
@@ -330,7 +404,9 @@ class GGBApi():
     @staticmethod
     def isSetter(fn):
         return fn in [
+            'setUndoPoint',
             'deleteObject',
+            'renameObject',
             'setAuxiliary',
             'setCaption',
             'setColor',
@@ -367,7 +443,6 @@ class GGBApi():
             'setErrorDialogsActive',
             'setCoordSystem',
             'setAxesVisible',
-            'setAxesVisible',
             'setAxisLabels',
             'setAxisSteps',
             'setAxisUnits',
@@ -388,13 +463,19 @@ class GGBApi():
             'setWidth',
             'setHeight',
             'setSize',
-            'recalculateEnvironments'
+            'recalculateEnvironments',
+            'setBase64',
+            'openFile',
+            'evalXML',
+            'setXML',
+            'debug'
         ]
 
     # Short aliases for the setter methods.
     @staticmethod
     def isSetterShort(fn):
         short = {
+            'UndoPoint': 'setUndoPoint',
             'Auxiliary': 'setAuxiliary',
             'Caption': 'setCaption',
             'Color': 'setColor',
@@ -433,7 +514,9 @@ class GGBApi():
             'Perspective': 'setPerspective',
             'Width': 'setWidth',
             'Height': 'setHeight',
-            'Size': 'setSize'
+            'Size': 'setSize',
+            'Base64': 'setBase64',
+            'XML': 'setXML'
         }
         if fn in short:
             return short[fn]
@@ -443,11 +526,14 @@ class GGBApi():
     @staticmethod
     def isGetter(fn):
         return fn in [
-            'renameObject',
+            'evalCommand',
+            'evalCommandGetLabels',
+            'evalCommandCAS',
             'getPNGBase64',
             'writePNGtoFile',
             'isIndependent',
             'isMoveable',
+            'getBase64',
             'isAnimationRunning',
             'getXcoord',
             'getYcoord',
@@ -478,7 +564,13 @@ class GGBApi():
             'getLabelVisible',
             'getMode',
             'getGridVisible',
-            'getPerspectiveXML'
+            'getPerspectiveXML',
+            'getXML',
+            'getAlgorithmXML',
+            'getVersion',
+            'getExerciseResult',
+            'getExerciseFraction',
+            'startExercise'
         ]
 
     # Short aliases for the getter methods.
@@ -486,6 +578,7 @@ class GGBApi():
     def isGetterShort(fn):
         short = {
             'PNGBase64': 'getPNGBase64',
+            'Base64': 'getBase64',
             'Xcoord': 'getXcoord',
             'Ycoord': 'getYcoord',
             'Zcoord': 'getZcoord',
@@ -513,7 +606,12 @@ class GGBApi():
             'LabelVisible': 'getLabelVisible',
             'Mode': 'getMode',
             'GridVisible': 'getGridVisible',
-            'PerspectiveXML': 'getPerspectiveXML'
+            'PerspectiveXML': 'getPerspectiveXML',
+            'XML': 'getXML',
+            'AlgorithmXML': 'getAlgorithmXML',
+            'Version': 'getVersion',
+            'ExerciseResult': 'getExerciseResult',
+            'ExerciseFraction': 'getExerciseFraction'
         }
         if fn in short:
             return short[fn]
