@@ -2,183 +2,215 @@
    Assembled by Eric Easthope
    */
 
-// specify path to D3.js
+// IIFE
+(function () {
+
+// specify path to d3.js
 requirejs.config({ "paths": { "d3": "//d3js.org/d3.v5.min" } });
 
-// require D3.js, then implement the template selector
+// require d3.js, get template selector data, then ...
 requirejs(["d3"], d3 => {
+    d3.json("https://raw.githubusercontent.com/callysto/notebook-templates/master/templateConfig.json")
+      .then(function(config) {
 
-    d3.json("https://raw.githubusercontent.com/callysto/notebook-templates/master/templateConfig.json").then(function(config) {
+  /** TEMPLATE ICON CONFIG **/
 
-      // specify arrangement and source URLs for notebook templates
-      var templates = config.templates;
+  // specify arrangement and source URLs for notebook templates
+  var templates = config.templates;
 
-      // select menubar container
-      var container = d3.select("div.container-fluid");
-      var kernelIndicator = d3.select("#kernel_indicator");
+  // select menubar container
+  var container = d3.select("div.container-fluid");
+  var kernelIndicator = d3.select("#kernel_indicator");
 
-      // get width of kernel indicator
-      var width = kernelIndicator
-                      .node()
-                          .getBoundingClientRect()
-                          .width;
+  // get width of kernel indicator
+  var width = kernelIndicator
+                  .node()
+                      .getBoundingClientRect()
+                      .width;
 
-      // get height of kernel indicator
-      var height = kernelIndicator
-                      .node()
-                          .getBoundingClientRect()
-                          .height;
+  // get height of kernel indicator
+  var height = kernelIndicator
+                   .node()
+                       .getBoundingClientRect()
+                       .height;
 
-      // insert container for template icon
-      var templateSelector = container
-                                 .insert("svg", "#modal_indicator")
-                                     .attr("width", (1/Math.sqrt(2))*height)
-                                     .attr("height", height)
-                                 .classed("navbar-text", true)
-                                     .style("float", "right")
-                                     .style("margin-left", "5px")
-                                     .style("margin-right", "5px");
-
-      // append a rectangle with an aspect ratio of square root of 2 (ISO)
-      var templateIcon = templateSelector
-                             .append("rect")
-                                 .attr("x", 0)
-                                 .attr("y", 0)
+  // insert container for template icon
+  var templateSelector = container
+                             .insert("svg", "#modal_indicator")
                                  .attr("width", (1/Math.sqrt(2))*height)
                                  .attr("height", height)
-                                 .style("fill", "#777");
+                             .classed("navbar-text", true)
+                                 .style("float", "right")
+                                 .style("margin-left", "5px")
+                                 .style("margin-right", "5px");
 
-      // set icon mouseover behaviour
-      templateIcon
-          .on("mouseover", function () {
-              d3.select(this).style("fill", "#333");
-          });
+  // append a rectangle with an aspect ratio of square root of 2 (ISO)
+  var templateIcon = templateSelector
+                         .append("rect")
+                             .attr("x", 0)
+                             .attr("y", 0)
+                             .attr("width", (1/Math.sqrt(2))*height)
+                             .attr("height", height)
+                             .style("fill", "#777");
 
-      // set icon mouseout behaviour
-      templateIcon
-          .on("mouseout", function () {
-              d3.select(this).style("fill", "#777");
-          });
+  // set icon mouseover behaviour
+  templateIcon
+      .on("mouseover", function () {
+          d3.select(this).style("fill", "#333");
+      });
 
-      // add a mouseover tooltip for template icon
-      templateIcon
-          .append("title")
-          .text("Add Template");
+  // set icon mouseout behaviour
+  templateIcon
+      .on("mouseout", function () {
+          d3.select(this).style("fill", "#777");
+      });
 
-      // show template selector via dialog popover when icon clicked
-      templateIcon.on("click", (d3.event != null && d3.event.altKey) ? showOveriew : showSelector);
+  // add a mouseover tooltip for template icon
+  templateIcon
+      .append("title")
+      .text("Add Template");
 
-      // initialize selected template and template index variables
-      var selectedTemplate, selectedIndex;
-
-      function showOveriew() {
-        d3.select("div.cell").style("width", "66%");
-        d3.select("#notebook-container")
-          .style("width", "100%")
-          .style("padding", "15px");
-        
-        var cellElement = this.element.parents(".cell"),
-            cellIndex = Jupyter.notebook.get_cell_elements().index(cellElement),
-            cellDiv = d3.select(Jupyter.notebook.get_cell(cellIndex).element[0]);
-
-        var notebookContainer = d3.select("#notebook-container"),
-            siteContainer = document.getElementById("site"),
-            leftMargin = d3.select('.input_prompt');
-
-        notebookContainer.selectAll('.movers').remove();
-
-        var notebookContainerWidth = notebookContainer.node().getBoundingClientRect().width,
-            leftMarginWidth = leftMargin.node().getBoundingClientRect().width,
-            cellWidth = cellDiv.node().getBoundingClientRect().width,
-            padding = parseInt(notebookContainer.style("padding"), 10);
-
-        var width = notebookContainerWidth - 2*padding,
-            height = siteContainer.getBoundingClientRect().height;
-
-        var marginAndPadding = leftMarginWidth + padding,
-            rightMargin = width - cellWidth + padding,
-            viewWidth = rightMargin - marginAndPadding,
-            viewTop = siteContainer.scrollTop + height/2 - viewWidth/2,
-            viewLeft = cellWidth + padding + rightMargin/2 - viewWidth/2;
-
-        var mover = d3.select("#notebook-container")
-            .append('div')
-            .attr('id', 'mover')
-            .attr('class', 'movers')
-            .style('border', '1px solid #cfcfcf')
-            .style('position', 'absolute')
-            .style('width', viewWidth.toString() + 'px')
-            .style('height', viewWidth.toString() + 'px')
-            .style('top', viewTop.toString() + 'px')
-            .style('left', viewLeft.toString() + 'px')
-
-        siteContainer.onscroll = () => {
-            mover.transition()
-                 .duration(500)
-                 .style('top', (siteContainer.scrollTop + height/2 - viewWidth/2).toString() + 'px')
-        }
+  // show template selector via dialog popover when icon clicked
+  templateIcon.on("click", function() {
+      if (d3.event != null && d3.event.altKey) {
+          if (d3.select("#notebook-container").selectAll(".movers").size() >= 1) {
+            d3.select("#notebook-container").selectAll(".movers").remove();
+            d3.selectAll(".cell")
+              .style("width", "100%");
+          }
+          else { showOveriew(); }
       }
+      else {
+          showSelector();
+      }
+  });
 
-      function showSelector() {
+  // initialize selected template and template index variables
+  var selectedTemplate, selectedIndex;
 
-          requirejs(["base/js/dialog"], function(dialog) {
-              var div = document.createElement("div");
-              d3.select(div)
-                .attr("id", "template-wrapper");
+  function showOveriew() {
 
-              var popup = dialog.modal({
-                  title: 'Select a Template',
-                  body: div,
-                  buttons: {
-                      'Choose': { id: 'chooseTemplate' },
-                      'Close': {}
-                  },
-                  notebook: Jupyter.notebook,
-                  keyboard_manager: Jupyter.keyboard_manager
-              });
+      // adjust width of cells
+      d3.selectAll(".cell")
+        .style("width", "66%");
 
-              getDialogWidth();
-              function getDialogWidth() {
-                  if (!$("div.modal-body").width()) {
-                      window.requestAnimationFrame(getDialogWidth);
-                  }
-                  else {
-                      loadTemplates($("div.modal-body").width(), div);
-                  };
-              };
+      // get a cell from which to sample width
+      var sampleCell = Jupyter.notebook.get_cells()[0],
+          sampleElement = d3.select(sampleCell.element[0]),
+          sampleWidth = sampleElement.node().getBoundingClientRect().width,
+          samplePadding = parseInt(sampleElement.style("padding"), 10);
+
+      var notebookContainer = d3.select("#notebook-container"),
+          containerWidth = notebookContainer.node().getBoundingClientRect().width,
+          containerPadding = parseInt(notebookContainer.style("padding"), 10),
+          containerMargin = parseInt(notebookContainer.style("margin-right"), 10);
+
+      var rightAlign = (containerPadding + containerMargin).toString() + "px",
+          overviewWidth = containerWidth - 2*containerPadding - sampleWidth - containerPadding + samplePadding;
+
+      var siteContainer = d3.select("#site"), // document.getElementById("site")
+          siteHeight = siteContainer.node().getBoundingClientRect().height;
+
+      d3.selectAll(".movers").remove();
+
+      function setMoverTop() {
+          var notebookHeight = d3.select("#notebook").node().getBoundingClientRect().height
+          var moverTop = (siteContainer.property("scrollTop") + siteHeight/2 - overviewWidth/2).toString() + "px";
+          var scrollLineTop = siteContainer.property("scrollTop")/(notebookHeight-siteHeight)*overviewWidth;
+
+          mover.style('top', moverTop);
+          scrollLine.attr("y1", scrollLineTop)
+                    .attr("y2", scrollLineTop);
+        }
+
+      var mover = notebookContainer
+                      .append('div')
+                      .attr("id", "mover")
+                      .attr('class', 'movers')
+                      .style('border', '1px solid #cfcfcf')
+                      .style('width', overviewWidth.toString() + "px")
+                      .style('height', overviewWidth.toString() + "px")
+                      .style("position", "absolute")
+                      .style("right", rightAlign);
+
+      var svg = mover.append("svg")
+                     .attr("id", "mover-svg");
+
+      svg.attr("width", "100%")
+         .attr("height", "100%");
+
+      var scrollLine = svg.append("line")
+                          .attr("x1", "0")
+                          .attr("x2", overviewWidth)
+                          .attr("y1", overviewWidth/2)
+                          .attr("y2", overviewWidth/2)
+                          .style("stroke", "#cfcfcf")
+                          .style("stroke-width", "1");
+
+      setMoverTop();
+      siteContainer.on("scroll", setMoverTop);
+  }
+
+  function showSelector() {
+
+      requirejs(["base/js/dialog"], function(dialog) {
+          var div = document.createElement("div");
+          d3.select(div)
+            .attr("id", "template-wrapper");
+
+          var popup = dialog.modal({
+              title: 'Select a Template',
+              body: div,
+              buttons: {
+                  'Choose': { id: 'chooseTemplate' },
+                  'Close': {}
+              },
+              notebook: Jupyter.notebook,
+              keyboard_manager: Jupyter.keyboard_manager
           });
-    }
 
-    function insertTemplate(templateUrl) {
+          getDialogWidth();
+          function getDialogWidth() {
+              if (!$("div.modal-body").width()) {
+                  window.requestAnimationFrame(getDialogWidth);
+              }
+              else {
+                  loadTemplates($("div.modal-body").width(), div);
+              };
+          };
+      });
+  }
 
-        // get template notebook from URL
-        Promise
-            .all([d3.json(templateUrl)])
-            .then(curriculum => {
+  function insertTemplate(templateUrl) {
 
-                // get notebook cells
-                var templateCells = curriculum[0].cells;
+      // get template notebook from URL
+      Promise
+          .all([d3.json(templateUrl)])
+          .then(curriculum => {
 
-                templateCells.forEach(cell => {
+              // get notebook cells
+              var templateCells = curriculum[0].cells;
 
-                    // get template cell type
-                    var cellType = cell.cell_type
+              templateCells.forEach(cell => {
 
-                    // get current notebook cells, get largest index
-                    var allCells = Jupyter.notebook.get_cells(),
-                        indexOfLastCell = allCells.length - 1;
+                  // get template cell type
+                  var cellType = cell.cell_type
 
-                    // create a clone of the template cell, insert at the bottom of the current notebook
-                    var newCell = Jupyter.notebook.insert_cell_below(cellType, indexOfLastCell);
-                    newCell.set_text(cell.source.join(""));
+                  // get current notebook cells, get largest index
+                  var allCells = Jupyter.notebook.get_cells(),
+                      indexOfLastCell = allCells.length - 1;
 
-                    // execute the clone of the template cell
-                    newCell.execute();
-                });
-            });
-    }
+                  // create a clone of the template cell, insert at the bottom of the current notebook
+                  var newCell = Jupyter.notebook.insert_cell_below(cellType, indexOfLastCell);
+                  newCell.set_text(cell.source.join(""));
 
-    function createTemplateButtons(width, div, padding, paperWidth, paperHeight, numberOfRows, templatesPerRow) {
+                  // execute the clone of the template cell
+                  newCell.execute();
+              });
+          });
+  }
+
+  function createTemplateButtons(width, div, padding, paperWidth, paperHeight, numberOfRows, templatesPerRow) {
 
         /* append svg container with width of dialog popover,
            set height to fit all template buttons
@@ -230,9 +262,9 @@ requirejs(["d3"], d3 => {
         rect
             .append("title")
             .text(d => d.id);
-    }
+  }
 
-    function loadTemplates(width, div) {
+  function loadTemplates(width, div) {
 
         // use the same padding on the dialog popover as the notebook container
         var padding = parseInt(d3.select("div#notebook-container")
@@ -262,6 +294,9 @@ requirejs(["d3"], d3 => {
                                            insertTemplate(selectedTemplate.url);
                                        }
                                    });
-    }
-  });
+  }
+    });
 });
+
+// IIFE
+})();
