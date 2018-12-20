@@ -34,7 +34,7 @@ START=$(git merge-base -a HEAD @{upstream})
 # Terminate early if there's any changes still to be commited -- those
 # changes are likely to be lost if we're re-writing git commit
 # history.
-if ! [ -z "$(git status --untracked-files=no --porcelain)" ]; then
+if ! [ -z "$(git status --untracked-files=all --porcelain)" ]; then
     echo "Git tree is unclean -- commit or stash your changes before proceeding"
     exit 1
 fi
@@ -45,6 +45,10 @@ if ! [ -x "$(which nbstripout)" ]; then
     echo "nbstripout does not appear to be available -- install it before proceeding"
     exit 2
 fi
+
+# Switch to the root of the git repository, so when we do
+# repository-wide actions, they apply appropriately
+cd ./$(git rev-parse --show-cdup)
 
 # In the event of a failure (either associated with the 'set -e'
 # setting above, or due to the script being terminated by Ctrl-C or
@@ -126,6 +130,7 @@ git log --topo-order --reverse --pretty=%H "$RANGE" | while read SHA; do
     stripnbs
 
     # Create a new git commit with the metadata from the commit we're re-creating.
+    git add -A .
     git commit -a -C"$SHA" > /dev/null
 done
 
