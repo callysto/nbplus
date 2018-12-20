@@ -75,7 +75,7 @@ fi
 # Record the set of all files modified in this git range (including
 # files which change and then change back).
 get_touched_notebooks() {
-    git log --pretty=%H "$RANGE" | while read SHA; do
+    for SHA in $(git log --pretty=%H); do
 	git diff-tree --no-commit-id --name-only -r "$SHA"
     done | grep '[.]ipynb$' | sort | uniq
 }
@@ -88,7 +88,7 @@ git reset --hard "$START" > /dev/null
 # Function to strip output from all the notebooks that have been
 # modified (if they exist at this point in history)
 stripnbs() {
-    echo "$NBS" | while IFS='' read FILE; do
+    for FILE in $NBS; do
 	if [ -e "$FILE" ]; then
 	    echo "Stripping \"$FILE\""
 	    nbstripout "$FILE"
@@ -119,7 +119,7 @@ reset_working_tree() {
 
 # Iterate over all the commits in our range, in the order they are in
 # the commit tree
-git log --topo-order --reverse --pretty=%H "$RANGE" | while read SHA; do
+for SHA in $(git log --topo-order --reverse --pretty=%H "$RANGE"); do
     echo "Recreating $SHA without output"
 
     # Restore the content that was in this commit
