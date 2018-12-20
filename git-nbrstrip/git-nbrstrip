@@ -148,8 +148,8 @@ done
 reset_working_tree "$END"
 stripnbs
 if ! [ -z "$(git status --untracked-files=no --porcelain)" ]; then
-    echo "Error: modified files are still present in the repository. This should not happen. Consider filing a bug."
-    echo "You can either choose to continue from this point (by commiting the modified files), or revert back to where you started by running:"
+    echo 'Error: modified files are still present in the repository. This should not happen. Consider filing a bug.'
+    echo 'You can either choose to continue from this point (by commiting the modified files), or revert back to where you started by running:'
     echo
     echo "git reset --hard $END"
 fi
