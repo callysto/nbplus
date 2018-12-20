@@ -120,7 +120,7 @@ reset_working_tree() {
 # Iterate over all the commits in our range, in the order they are in
 # the commit tree
 for SHA in $(git log --topo-order --reverse --pretty=%H "$RANGE"); do
-    echo "Recreating $SHA without output"
+    echo "Recreating $(git log -1 --pretty="%h %s" $SHA) without output"
 
     # Restore the content that was in this commit
     reset_working_tree "$SHA"
