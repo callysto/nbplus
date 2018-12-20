@@ -133,7 +133,12 @@ for SHA in $(git log --topo-order --reverse --pretty=%H "$RANGE"); do
 
     # Create a new git commit with the metadata from the commit we're re-creating.
     git add -A .
-    git commit -a -C"$SHA" > /dev/null
+    if ! git commit -a -C"$SHA"; then
+        echo "Note: Commit \"$(git log -1 --pretty="%h %s" $SHA)\" apparently"
+        echo "didn't change anything. If you expected it to, something has gone"
+        echo "badly wrong with this script, and the situation should be"
+        echo "investigated."
+    fi
 done
 
 # At this point, we're finished. We can now as a sanity check verify
