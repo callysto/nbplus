@@ -9,7 +9,8 @@ Submodules are installed separately. Available submodules are:
 * `geogebra`
 * `nbhide`
 * `nbvis`
-* `nbtemplate`
+* `nbblocks`
+* `nblayout` (BETA)
 
 Use the following command, replacing `<submodule>` with the name of one of the submodules above:
 
@@ -36,9 +37,9 @@ Well-behaved objects are aptly named (_what does the object do?_) and readily ex
 
 ## Authors
 
-* [**Pacific Institute for the Mathematical Sciences**](http://www.pims.math.ca) - *PIMS is dedicated to promoting excellence in the mathematical sciences, enriching public education, and creating partnerships with similar organizations around the world.* 
+* [**Pacific Institute for the Mathematical Sciences**](http://www.pims.math.ca) - *PIMS is dedicated to promoting excellence in the mathematical sciences, enriching public education, and creating partnerships with similar organizations around the world.*
 
-* [**Cybera**](https://www.cybera.ca) - *Cybera provides supercomputing services.* 
+* [**Cybera**](https://www.cybera.ca) - *Cybera provides supercomputing services.*
 
 See also the list of [contributors](https://github.com/callysto/nbplus/graphs/contributors) who participated in this project.
 
