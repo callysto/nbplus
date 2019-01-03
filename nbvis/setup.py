@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 def main():
     setup(
         name='nbvis',
-        version='0.0.dev0',
+        version='0.0.1',
         author='Eric Easthope',
         packages=find_packages(),
         include_package_data=True,
