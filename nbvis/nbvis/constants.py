@@ -3,13 +3,13 @@
 
 """
 A collection of unpkg paths and default D3.js modules for reference by RequireJS
-Assembled by Eric Easthope
+Assembled by Eric Easthope for Callysto
+MIT License
 """
 
 paths = {
-    "d3-require": "//unpkg.com/d3-require@1.0.4/dist/d3-require.min",
-    "topojson":   "//unpkg.com/topojson-client@3?",
-    "mathBox":    "//cdn.rawgit.com/unconed/mathbox/eaeb8e15/build/mathbox-bundle"
+    "d3-require": "//unpkg.com/d3-require@1?",
+    "mathBox":    "//unpkg.com/mathbox@0.1.0?"
 }
 
 modules = [
