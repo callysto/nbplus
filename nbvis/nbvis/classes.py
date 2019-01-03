@@ -3,13 +3,14 @@
 
 """
 Python classes to represent and display D3.js and MathBox.js instances
-Assembled by Eric Easthope
+Assembled by Eric Easthope for Callysto
+MIT License
 """
 
 import os
 
 from .constants import paths, modules
-from .elements import SVG, Canvas
+from .elements import Element # SVG, Canvas
 from .helpers import getVariableName
 
 from json import dumps
@@ -23,20 +24,18 @@ class Vis:
     executes pending JavaScript code
     """
 
-    def __init__(self, *args, js="", silent=True, _now=False):
-        
-        self.js = js         # make container for JavaScript code
-        self.silent = silent # suppress print outputs
+    def __init__(self, *args, js="", silent=True, print_output=False, _now=False):
+        """Make a container for JavaScript code, suppress print outputs if silent is True"""
+        self.js = js
+        self.silent = silent
 
-        # make container for default RequireJS modules
-        self.require = [
-            "d3-require",
-            "topojson",
-            "mathBox"
-        ] 
-        
-        self.modules = modules # make container for custom RequireJS modules
-        self.instances = []    # make container for class instances
+        """Make containers for common RequireJS modules and their variable names"""
+        self.require = []
+        self.require_names = []
+
+        """Make containers for custom RequireJS modules and class instances""" 
+        self.modules = modules
+        self.instances = []
 
         """
         Add arguments that are D3 or MathBox class instances to self.instances,
@@ -60,9 +59,13 @@ class Vis:
                 print('Found {} instance of "{}" ...'.format(i.__class__.__name__, i.name))
 
             try:
-                self.js += i._view.js
+                self.js += i._view.js + "\n"
             except AttributeError: pass
-
+            
+            """Prepare to require a module to support its corresponding class instance"""
+            self.require += ["d3-require" if i.__class__.__name__ == "D3" else "mathBox"]
+            self.require_names += ["d3" if i.__class__.__name__ == "D3" else "mb"]
+            
             if i._require != []:
                 self.modules += [r for r in i._require]
                 if not self.silent:
@@ -75,10 +78,10 @@ class Vis:
             aggregate queued MathBox.js code
             """
             if len(MathBox.instances) > 0:
-                mb_filepath = os.path.join(module_directory, 'static/mb.js')
+                mb_filepath = os.path.join(module_directory, 'js/mb.js')
                 with open(mb_filepath, 'r') as mathBoxWrapper:
                     mb =  mathBoxWrapper.read()
-                    self.js += mb
+                    # self.js += mb
 
                 try:
                     for code in get_ipython().user_ns['mathbox_code']:
@@ -97,16 +100,36 @@ class Vis:
         replace any variable placeholders marked with #,
         execute pending JavaScript code
         """
-        config_filepath = os.path.join(module_directory, 'static/config.js')
-        display(Javascript(
-            open(config_filepath, "r").read()
-                                   .replace("#paths", dumps(paths))
-                                   .replace("#requires", str(self.require))
-                                   .replace("#require_names", ", ".join(["d3", "topojson"]))
-                                   .replace("#modules", str(self.modules))
-                                   .replace("#code", self.js)
-        )
-               );
+        config_filepath = os.path.join(module_directory, 'js/config.js')
+        output = (open(config_filepath, "r").read()
+                      .replace("#paths", dumps(paths, indent=8)[:-1] + 4*" " + "}")
+                      .replace("#requires", dumps(list(set(self.require))))
+                      .replace("#require_names", str(", ".join(set(self.require_names))))
+                 )
+        
+        """Incorporate d3.require into the template if needed"""
+        if "d3-require" in self.require:
+            output = output.replace("#d3_require?",
+                                    "d3.require(...modules).then(d3 => { #code\n" + 4*" " + "});")
+        else:
+            output = output.replace("#d3_require?", "#code")
+            
+        """Include modules and visualization code"""
+        output = (output.replace("#modules", dumps(self.modules))
+                        .replace("#code", 4*" " + self.js.replace('\n', '\n' + 4*" "))
+                 )
+        
+        """Remove file headers"""
+        start = output.find('// ')
+        end = output.find( '*/' )
+        for i in range(2):
+            if start != -1 and end != -1:
+                output = output[:start] + output[end+2:]
+                start = output.find('// ')
+                end = output.find( '*/' )
+        
+        display(Javascript(output))
+        if print_output: print(output)
 
 class D3:
     """
@@ -123,12 +146,13 @@ class D3:
         print('Reset list of D3 class instances!')
 
     def __init__(self, name, silent=True):
-        
-        self.name = name     # name instance with an identifier
-        self.silent = silent # suppress print outputs, except duplicate warnings
+        """Name instance with an identifier, suppress print outputs if silent is True"""
+        self.name = name
+        self.silent = silent
 
-        self.js = ""         # make container for JavaScript code
-        self._require = []   # make container for other RequireJS modules
+        """Make containers for JavaScript code and other RequireJS modules"""
+        self.js = ""
+        self._require = []
 
         self.isDuplicate = any(self.name == i.name for i in self.__class__.instances)
         if not self.isDuplicate or self.name == 'null':
@@ -141,12 +165,12 @@ class D3:
 
     def svg(self, height):
         """Sets SVG as view element for D3.js visualization"""
-        self._view = SVG(height=height, name=self.name)
+        self._view = Element(height=height, element_type='svg', name=self.name)
         return self;
 
     def canvas(self, height):
         """Sets Canvas as view element for D3.js visualization"""
-        self._view = Canvas(height=height, name=self.name)
+        self._view = Element(height=height, element_type='canvas', name=self.name)
         return self;
 
     def require(self, *args):
@@ -169,13 +193,14 @@ class MathBox:
         print('Reset list of MathBox class instances!')
 
     def __init__(self, name, silent=True):
+        """Name instance with an identifier, suppress print outputs if silent is True"""
+        self.name = name
+        self.silent = silent
 
-        self.name = name     # name instance with an identifier
-        self.silent = silent # suppress print outputs, except duplicate warnings
-        
-        self.js = ""         # make container for JavaScript code
-        self._require = []   # make container for other RequireJS modules
-        
+        """Make containers for JavaScript code and other RequireJS modules"""
+        self.js = ""
+        self._require = []
+
         self.isDuplicate = any(self.name == i.name for i in self.__class__.instances)
         if not self.isDuplicate or self.name == 'null':
             self.__class__.instances.append(self)
@@ -187,7 +212,7 @@ class MathBox:
 
     def canvas(self, height):
         """Sets Canvas as view element for visualization"""
-        self._view = Canvas(height=height, name=self.name)
+        self._view = Element(height=height, element_type='mb', name=self.name)
         return self;
 
     def require(self, *args):
