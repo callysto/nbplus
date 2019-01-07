@@ -23,6 +23,11 @@ def main():
             ("share/jupyter/nbextensions/nbblocks", [
                 "nbblocks/static/selector.js",
             ]),
+            
+            # like `jupyter nbextension install --sys-prefix`
+            ("share/jupyter/nbextensions/nbblocks", [
+                "nbblocks/static/popoverStyles.css",
+            ]),
 
             # like `jupyter nbextension enable --sys-prefix`
             ("etc/jupyter/nbconfig/notebook.d", [

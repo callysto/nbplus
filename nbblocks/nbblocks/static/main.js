@@ -32,6 +32,13 @@ define(["d3", "d3-selection-multi", "require", "jquery", "base/js/namespace", ".
     var initialize = function () {
         // update params with any specified in the server's config file
         $.extend(true, params, Jupyter.notebook.config.nbblocks);
+        
+        // find relative url path to custom style sheets, generate style tag
+        var cssPath = Jupyter.notebook.base_url + "nbextensions/nbblocks/popoverStyles.css",
+            cssTag = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cssPath + "\">";
+
+        // append custom style sheets
+        $("head").append(cssTag);
 
         // var overviewVisible = false;
 
