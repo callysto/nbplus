@@ -65,11 +65,11 @@ trap "recover" SIGINT SIGTERM ERR
 RANGE="$START..$END"
 
 if [ -n "$1" ]; then
-    if echo $1 | grep -E '[.][.]' &>/dev/null ; then
-        RANGE="$1"
-    else
-	RANGE="$1..$END"
+    if ! git cat-file -t "$1" &>/dev/null; then
+        echo "\"$1\" doesn't appear to refer to a valid git commit"
+        exit 4
     fi
+	  RANGE="$1..$END"
 fi
 
 # Record the set of all files modified in this git range (including
