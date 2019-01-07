@@ -19,6 +19,25 @@
 # from the files your commit range modifies, followed by recreated
 # versions of each commit in the range, but with output likewise
 # stripped from them.
+#
+# Run anywhere from inside a git repository hosting your notebook changes.
+#
+# To run on a range other than the commits created since the current
+# branch diverged from its upstream/tracking-branch, , provide the
+# first commit *prior* to the commits you'd like to process. For
+# example:
+#
+# $ git nbrstrip HEAD^^^^
+#
+# will process all commits after HEAD^^^^, up to and including HEAD
+#
+# If successful, git-nbrstrip will report on each commit it creates or
+# re-creates
+#
+# In the event of an error, it will report the issue and restore your
+# work tree to the state you started in, or provide instructions o how
+# to do so.
+
 
 # Exit if anything goes wrong -- see below for error handler that
 # recovers the state.
