@@ -5,9 +5,10 @@
     overflow-x: hidden;
     overflow-y: hidden;
     position: relative;
-    background: #fff;
+    background: -webkit-linear-gradient(bottom, rgba(255,255,255,0), #fff 67%);;
 
     padding: 0px;
+    border: 1px solid #e5e5e5;
   }
 
 .blocks-wrap:first-of-type {
@@ -37,6 +38,7 @@
     -o-transform-origin: 0 0;
     -webkit-transform-origin: 0 0;
     transform-origin: 0 0;
+      pointer-events: none;
   }
 
   .fader {
@@ -66,11 +68,13 @@
                                   supported by Chrome and Opera */
 }
 
-.modal-header {
-    border: 0;
+
+
+.block-selector .modal-header {
+    pointer-events: none;
 }
 
-.modal-content {
+.block-selector .modal-content {
     background: none;
     border: 0;
     -webkit-box-shadow: none;
@@ -78,7 +82,7 @@
     box-shadow: none;
 }
 
-.modal-footer {
+.block-selector .modal-footer {
     display: none;
 }
 
@@ -96,5 +100,4 @@ body.modal-open {
 .modal-backdrop.in {
     opacity: 0.33;
 }
-
 
