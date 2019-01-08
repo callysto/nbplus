@@ -59,7 +59,7 @@ define(["d3", "d3-selection-multi", "require", "jquery", "base/js/namespace", ".
                                     .height;
 
         // get reorder icon as svg from Ionicons
-        d3.svg("https://ionicons.com/ionicons/svg/md-list-box.svg")
+        d3.svg("https://ionicons.com/ionicons/svg/md-apps.svg")
           .then(icon => addButton(icon));
 
         function addButton(iconSvg) {
