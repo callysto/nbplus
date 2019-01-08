@@ -69,6 +69,7 @@ define(["d3", "d3-selection-multi", "base/js/dialog"],
                   
                   // hide if close button clicked
                   d3.select(".modal")
+                    .classed("block-selector", true)
                     .select("button.close")
                     .style("opacity", 1)
                     .style("font-size", "27px")
@@ -83,10 +84,10 @@ define(["d3", "d3-selection-multi", "base/js/dialog"],
                   
                   titleHeader.outerHTML = titleHeader.outerHTML.replace("4", "2");
                   
-                  d3.select("#header").style("filter", "blur(9px)");
-                  d3.select("#site").style("filter", "blur(9px)");
+                  d3.select("#header").style("filter", "blur(3px)");
+                  d3.select("#site").style("filter", "blur(3px)");
                   d3.select("div.modal-dialog").style("width", (2*siteWidth/3).toString() + "px");
-                  // loadTemplates($("div.modal-body").width());
+                  loadTemplates($("div.modal-body").width());
               };
           };
         }
@@ -95,7 +96,7 @@ define(["d3", "d3-selection-multi", "base/js/dialog"],
     // create the block selector object
     var s = new selector("blocks");
 
-    var templates = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+    var blocks = [];
 
     var siteWidth = parseInt(d3.select("#site").style("width")),
         siteHeight = parseInt(d3.select("#site").style("height")),
@@ -106,46 +107,58 @@ define(["d3", "d3-selection-multi", "base/js/dialog"],
     
     function getTemplates(url) {
         // from config list of blocks, get each template url
-        d3.json(url).then(function(blocks) {
+        d3.json(url).then(function(config) {
             
-            // specify arrangement and source URLs for notebook templates
+            var htmls = config.blocks.map(block => {
+                blocks.push({id: block.text});
+                
+                var url = block.url.split('.').slice(0, -1).join('.') + ".html";
+                return d3.html(url);
+            });
+            
+            var ipynbs = config.blocks.map(block => d3.json(block.url));
+            
+            // use Promise.all to retrieve blocks html AND blocks metadata
+            Promise.all(htmls)
+                   .then(data => {
+                data.map((html, i) => {
+                    blocks[i].html = html;
+                },
+                        error => {});
+            });
+            
+            Promise.all(ipynbs)
+                   .then(data => {
+                data.map((ipynb, i) => {
+                    blocks[i].ipynb = ipynb;
+                },
+                        error => {});
+            });
+            
             console.log(blocks);
-            
-            
         });
-        
-        // use Promise.all to retrieve blocks html AND blocks metadata
-        // ...
-        
-        // for each block, create a template button
-        
-        /*
-        var url = "https://gist.githubusercontent.com/ericeasthope/7ce5cef54da6a020d9f074fd650f949c/" +
-                  "raw/f6dcdbf8b3c30fb3398f2c545586677285b6d643/requestsBlockTest.html"
-
-         d3.html(url)
-           .then(
-          function(data){
-            createTemplateButtons(data, container, padding, paperWidth, paperHeight);
-          },
-
-          function(error){
-              console.log(error);
-          });
-        */
     }
     
-    function insertBlock() {
+    function insertBlock(block) {
         
-        // parse block metadata to get each of its cells
-        // ...
+        // parse block metadata to get each of its notebook cells
+        var cells = block.ipynb.cells;
         
-        // insert the content of each of the cells
-        // ...
-        
-        // execute the cells that have been added
-        // ...
-        
+        cells.forEach(cell => {
+            // get template cell type
+            var cellType = cell.cell_type
+
+          // get current notebook cells, get largest index
+          var allCells = Jupyter.notebook.get_cells(),
+              indexOfLastCell = allCells.length - 1;
+
+          // create a clone of the template cell, insert at the bottom of the current notebook
+          var newCell = Jupyter.notebook.insert_cell_below(cellType, indexOfLastCell);
+          newCell.set_text(cell.source.join(""));
+
+          // execute the clone of the template cell
+          newCell.execute();
+        });
     }
 
     function loadTemplates(width) {
@@ -155,7 +168,7 @@ define(["d3", "d3-selection-multi", "base/js/dialog"],
                          //        .style("padding"), 10);
 
         // get the number of available templates
-        var numberOfTemplates = templates.length,
+        var numberOfTemplates = blocks.length,
             templatesPerRow = 3,
             numberOfRows = Math.ceil(numberOfTemplates/templatesPerRow);
 
@@ -171,63 +184,92 @@ define(["d3", "d3-selection-multi", "base/js/dialog"],
                                     .attr("id", "blocks-container")
                                     .classed("blocks-container noselect", true)
                                     // .style("height", containerHeight.toString() + "px");
-
-        var url = "https://gist.githubusercontent.com/ericeasthope/7ce5cef54da6a020d9f074fd650f949c/" +
-                  "raw/f6dcdbf8b3c30fb3398f2c545586677285b6d643/requestsBlockTest.html"
-
-         d3.html(url)
-           .then(
-          function(data){
-            createTemplateButtons(data, container, padding, paperWidth, paperHeight);
-          },
-
-          function(error){
-              console.log(error);
-          });
+        
+        if (blocks.length > 0) createTemplateButtons(container, padding, paperWidth, paperHeight);
     }
 
-  function createTemplateButtons(data, container, padding, paperWidth, paperHeight) {
+  function createTemplateButtons(container, padding, paperWidth, paperHeight) {
 
         // append evenly spaced rectangles for each template
         var block = container
                        .selectAll("blocks")
-                           .data(templates)
+                           .data(blocks)
                        .enter()
 
         var blocksWrap = block.append("div")
                               .classed("blocks-wrap", true)
                             .style("margin-left", padding.toString() + "px")
                             .style("margin-bottom", padding.toString() + "px")
-                            .style("width", paperWidth.toString() + "px")
+                            .style("width", (paperWidth).toString() + "px")
                             .style("height", paperHeight.toString() + "px")
                               .on("mouseover", function() {
-                                  var fader = d3.select(this).select(".fader");
-                                  fader.style("opacity", "0");
+                                    d3.select(this).select("iframe").node().contentWindow
+                                           .scroll({ top: 2500, left: 0, behavior: 'smooth' });
                                })
                                .on("mouseout", function() {
-                                  var fader = d3.select(this).select(".fader");
-                                  fader.transition()
-                                       .duration(125)
-                                       .style("opacity", "1");
+                                   d3.select(this).select("iframe").node().contentWindow
+                                           .scroll({ top: 0, left: 0, behavior: 'smooth' });
                                })
-        .on("click", function() {
-                                   console.log(this, "clicked");
-                               }),
+                        
+        .on("click", function(d) {
+            console.log(d, "clicked");
+            insertBlock(d);
+        });
 
-
-        blockFrame = blocksWrap.append("iframe")
+        var blockFrame = blocksWrap.append("iframe")
                     .classed("block", true)
+                    .style("border", 0)
+                    .attr("allowTransparency", true)
                       .attr("scrolling", "no")
                            .style("width", (2*paperWidth).toString() + "px")
-                           .style("height", (2*paperHeight).toString() + "px"),
+                           .style("height", (2*paperHeight).toString() + "px");
+        
+      /*
+        var fader = blocksWrap.append("span")
+            .classed("fader", true)
+            .style("height", (paperHeight).toString() + "px");
+            */
 
-        fader = blocksWrap.append("span")
-          .classed("fader", true)
-          .style("height", (paperHeight).toString() + "px");
-
-      blockFrame.each(function() {
-          d3.select(this).node().contentDocument
-            .write(data.documentElement.innerHTML);
+      blockFrame.each(function(d) {
+          var html = d3.select(this).node().contentDocument.documentElement;
+          d3.select(html).html(d.html.documentElement.innerHTML);
+          
+          // strip input and output prompts
+          d3.select(html)
+            .select("body")
+            .selectAll(".prompt")
+              .style("display", "none");
+          
+          // reduce font-size
+          d3.select(html)
+            .select("body")
+            .select(".reveal").style("font-size", "100%");
+          
+          d3.select(html)
+            .select("body")
+            .style("bottom", "unset")
+            .style("background", "none transparent");
+          
+          d3.select(html)
+            .select("body")
+            .selectAll(".input_area")
+            .style("background", "none transparent");
+          
+          // uses `each` to iterate through and render elements one at a time
+          /*
+          var mathRenderNodes = d3.select(html)
+                                 .select("body")
+                                   .select("section")
+                                   .select("section")
+                                     .selectAll(".cell");
+          
+          // typeset the contents of each iframe
+          mathRenderNodes.each(function (d, i) {
+              MathJax.Hub.Queue(["Typeset", MathJax.Hub, this]);
+          });
+          */
+          
+          MathJax.Hub.Queue(["Typeset", MathJax.Hub, d3.select(html).node()]);
       });
   }
 
