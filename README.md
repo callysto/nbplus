@@ -1,35 +1,45 @@
 # nbplus
 
-[nbplus](https://github.com/callysto/nbplus) (working title) a collection of Callysto-made Python modules for Creators wanting greater interactivity and visual aesthetic in Jupyter notebooks. The tools here reflect a desire for aggregation of reusable code and uniformity in how we develop interactive content.
+[nbplus](https://github.com/callysto/nbplus) a collection of Callysto-made Python modules for Creators wanting greater interactivity and visual aesthetic in Jupyter notebooks. The tools here reflect a desire for aggregation of reusable code and uniformity in how we develop interactive content.
 
 ## Getting Started
 
-All submodules are installed via the command line using
+Submodules are installed separately. Available submodules are:
 
-`pip install --upgrade --force-reinstall --user git+git://github.com/callysto/nbplus.git#egg=nbplus`.
+* `geogebra`
+* `nbhide`
+* `nbvis`
+* `nbblocks`
+* `nblayout` (BETA)
 
-Once installed, submodules may be imported separately.
+Use the following command, replacing `<submodule>` with the name of one of the submodules above:
+
+`pip install --upgrade --force-reinstall --user git+git://github.com/callysto/nbplus.git#egg=<submodule>\&subdirectory=<submodule>`
+
+You must restart the kernel after the install.
+
+Once installed, import a submodule by referring to itself.
 
 e.g.
 
 ```python
-import nblayout.uiButtons
-from nbvis.ggb import *
+from nbvis.classes import D3, Vis
+from geogebra.ggb import *
 ```
 
-See the [training manual]() for documentation and use cases.
+See the [training manual](https://training.callysto.ca/extensions/nbplus) for documentation and use cases.
 
 ## Contributing
 
-Create and develop upon a new branch to contribute. Submit pull requests to the `staging` branch.
+Create and develop upon a new branch, then submit pull requests to our `master` branch for review.
 
 Well-behaved objects are aptly named (_what does the object do?_) and readily expose effective code so that incoming learners may transparently access their underlying functionality.
 
 ## Authors
 
-* [**Pacific Institute for the Mathematical Sciences**](http://www.pims.math.ca) - *PIMS is dedicated to promoting excellence in the mathematical sciences, enriching public education, and creating partnerships with similar organizations around the world.* 
+* [**Pacific Institute for the Mathematical Sciences**](http://www.pims.math.ca) - *PIMS is dedicated to promoting excellence in the mathematical sciences, enriching public education, and creating partnerships with similar organizations around the world.*
 
-* [**Cybera**](https://www.cybera.ca) - *Cybera provides supercomputing services.* 
+* [**Cybera**](https://www.cybera.ca) - *Cybera provides supercomputing services.*
 
 See also the list of [contributors](https://github.com/callysto/nbplus/graphs/contributors) who participated in this project.
 

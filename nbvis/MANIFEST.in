@@ -1,0 +1,2 @@
+include nbvis/static/*.js
+include nbvis/static/*.css
