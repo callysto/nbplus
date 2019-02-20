@@ -19,6 +19,25 @@
 # from the files your commit range modifies, followed by recreated
 # versions of each commit in the range, but with output likewise
 # stripped from them.
+#
+# Run anywhere from inside a git repository hosting your notebook changes.
+#
+# To run on a range other than the commits created since the current
+# branch diverged from its upstream/tracking-branch, , provide the
+# first commit *prior* to the commits you'd like to process. For
+# example:
+#
+# $ git nbrstrip HEAD^^^^
+#
+# will process all commits after HEAD^^^^, up to and including HEAD
+#
+# If successful, git-nbrstrip will report on each commit it creates or
+# re-creates
+#
+# In the event of an error, it will report the issue and restore your
+# work tree to the state you started in, or provide instructions o how
+# to do so.
+
 
 # Exit if anything goes wrong -- see below for error handler that
 # recovers the state.
@@ -28,10 +47,13 @@ set -e
 # history.
 END="$(git log -1 --pretty=%H)"
 
+# Record the last commit *before* our changes
+START=$(git merge-base -a HEAD @{upstream})
+
 # Terminate early if there's any changes still to be commited -- those
 # changes are likely to be lost if we're re-writing git commit
 # history.
-if ! [ -z "$(git status --untracked-files=no --porcelain)" ]; then
+if ! [ -z "$(git status --untracked-files=all --porcelain)" ]; then
     echo "Git tree is unclean -- commit or stash your changes before proceeding"
     exit 1
 fi
@@ -43,44 +65,49 @@ if ! [ -x "$(which nbstripout)" ]; then
     exit 2
 fi
 
+# Switch to the root of the git repository, so when we do
+# repository-wide actions, they apply appropriately
+cd ./$(git rev-parse --show-cdup)
+
 # In the event of a failure (either associated with the 'set -e'
 # setting above, or due to the script being terminated by Ctrl-C or
 # similar, restore the repository to the state we started in.
 recover() {
+    echo "Something went wrong -- aborting, and resetting back to $END"
     git reset --hard "$END"
+    exit 3
 }
 trap "recover" SIGINT SIGTERM ERR
 
 # By default, operate on the commits produced since we diverged from
 # the tracking branch, but allow a different starting commit or range.
-RANGE="@{upstream}..$END"
+RANGE="$START..$END"
 
 if [ -n "$1" ]; then
-    if echo $1 | grep -E '[.][.]' &>/dev/null ; then
-        RANGE="$1"
-    else
-	RANGE="$1..$END"
+    if ! git cat-file -t "$1" &>/dev/null; then
+        echo "\"$1\" doesn't appear to refer to a valid git commit"
+        exit 4
     fi
+	  RANGE="$1..$END"
 fi
 
 # Record the set of all files modified in this git range (including
 # files which change and then change back).
 get_touched_notebooks() {
-    git log --pretty=%H "$RANGE" | while read SHA; do
+    for SHA in $(git log --pretty=%H); do
 	git diff-tree --no-commit-id --name-only -r "$SHA"
     done | grep '[.]ipynb$' | sort | uniq
 }
 NBS="$(get_touched_notebooks)"
 
 # Move our git repository to just before the selected range.
-START="$(echo "$RANGE" | sed 's/[.][.].*$//')"
 git reset --hard "$START" > /dev/null
 
 
 # Function to strip output from all the notebooks that have been
 # modified (if they exist at this point in history)
 stripnbs() {
-    echo "$NBS" | while IFS='' read FILE; do
+    for FILE in $NBS; do
 	if [ -e "$FILE" ]; then
 	    echo "Stripping \"$FILE\""
 	    nbstripout "$FILE"
@@ -111,8 +138,8 @@ reset_working_tree() {
 
 # Iterate over all the commits in our range, in the order they are in
 # the commit tree
-git log --topo-order --reverse --pretty=%H "$RANGE" | while read SHA; do
-    echo "Recreating $SHA without output"
+for SHA in $(git log --topo-order --reverse --pretty=%H "$RANGE"); do
+    echo "Recreating $(git log -1 --pretty="%h %s" $SHA) without output"
 
     # Restore the content that was in this commit
     reset_working_tree "$SHA"
@@ -124,7 +151,13 @@ git log --topo-order --reverse --pretty=%H "$RANGE" | while read SHA; do
     stripnbs
 
     # Create a new git commit with the metadata from the commit we're re-creating.
-    git commit -a -C"$SHA" > /dev/null
+    git add -A .
+    if ! git commit -a -C"$SHA"; then
+        echo "Note: Commit \"$(git log -1 --pretty="%h %s" $SHA)\" apparently"
+        echo "didn't change anything. If you expected it to, something has gone"
+        echo "badly wrong with this script, and the situation should be"
+        echo "investigated."
+    fi
 done
 
 # At this point, we're finished. We can now as a sanity check verify
@@ -134,8 +167,8 @@ done
 reset_working_tree "$END"
 stripnbs
 if ! [ -z "$(git status --untracked-files=no --porcelain)" ]; then
-    echo "Error: modified files are still present in the repository. This should not happen. Consider filing a bug."
-    echo "You can either choose to continue from this point (by commiting the modified files), or revert back to where you started by running:"
+    echo 'Error: modified files are still present in the repository. This should not happen. Consider filing a bug.'
+    echo 'You can either choose to continue from this point (by commiting the modified files), or revert back to where you started by running:'
     echo
     echo "git reset --hard $END"
 fi
