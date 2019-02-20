@@ -10,7 +10,6 @@ def _jupyter_server_extension_paths():
 
 def _jupyter_nbextension_paths():
     return [
-        
         dict(
             section='notebook',
             src='static',           # path is relative to `nbblocks` directory
