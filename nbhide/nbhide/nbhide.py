@@ -33,12 +33,12 @@ class HideCell(Magics):
 
     @cell_magic
     def hide(self, line, cell):
-	hide_cell_filepath = os.path.join(module_directory, "hideCell.js")
+        hide_cell_filepath = os.path.join(module_directory, "hideCell.js")
 	with open(hide_cell_filepath, 'r') as hideCell:
-		display(Javascript(hideCell.read()))
+	    display(Javascript(hideCell.read()))
         get_ipython().run_cell(cell)
 
 toggle_filepath = os.path.join(module_directory, "createCellToggle.js")
 with open(toggle_filepath, 'r') as createCellToggle:
-	display(Javascript(createCellToggle.read()))
+    display(Javascript(createCellToggle.read()))
 get_ipython().register_magics(HideCell)
