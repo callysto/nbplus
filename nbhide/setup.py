@@ -16,7 +16,7 @@ def main():
         name='nbhide',
         version='0.0.0',
         author='Eric Easthope',
-        packages=find_packages(exclude=['ext']),
+        packages=find_packages('nbhide'),
         include_package_data=True,
         install_requires=[]
     )
