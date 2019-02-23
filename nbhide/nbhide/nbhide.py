@@ -17,9 +17,13 @@
    Assembled for Callysto
 """
 
+import os
+
 from IPython import get_ipython
 from IPython.display import display, Javascript, Markdown
 from IPython.core.magic import Magics, magics_class, cell_magic
+
+module_directory = os.path.dirname(os.path.abspath(__file__))
 
 @magics_class
 class HideCell(Magics):
@@ -29,8 +33,12 @@ class HideCell(Magics):
 
     @cell_magic
     def hide(self, line, cell):
-        display(Javascript(filename="hideCell.js"))
+	hide_cell_filepath = os.path.join(module_directory, "hideCell.js")
+	with open(hide_cell_filepath, 'r') as hideCell:
+		display(Javascript(hideCell.read()))
         get_ipython().run_cell(cell)
 
-display(Javascript(filename="createCellToggle.js"))
+toggle_filepath = os.path.join(module_directory, "createCellToggle.js")
+with open(toggle_filepath, 'r') as createCellToggle:
+	display(Javascript(createCellToggle.read()))
 get_ipython().register_magics(HideCell)
