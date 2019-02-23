@@ -1,0 +1,2 @@
+recursive-include nbhide/*.js
+recursive-include nbhide/*.css
