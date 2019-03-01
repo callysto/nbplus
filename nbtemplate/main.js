@@ -1,11 +1,18 @@
 define([
+    'module',
     'require',
     'jquery',
-    'base/js/namespace'
+    'base/js/namespace',
+    './injector',
+    './banners'
+
 ], function(
+    module,
     requirejs,
     $,
-    Jupyter
+    Jupyter,
+    injector,
+    banners
 ) {
     "use strict";
     
