@@ -18,7 +18,7 @@ def main():
         version='0.0.0',
         author='Eric Easthope',
         license='MIT',
-        packages=['nbhide'],
+        packages=['nblayout'],
         include_package_data=True,
         install_requires=[]
     )

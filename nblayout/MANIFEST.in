@@ -1,2 +1,2 @@
-include nbhide/*.js
-include nbhide/*.css
+include nblayout/*.js
+include nblayout/*.css
