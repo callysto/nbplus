@@ -1,4 +1,0 @@
-recursive-include jupyter-config *.json
-recursive-include nbhide/static *.js
-recursive-include nbhide/static *.json
-recursive-include nbhide/static *.css
