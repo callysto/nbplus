@@ -1,3 +1,2 @@
-recursive-include jupyter-config *.json
-recursive-include nblayout/static *.js
-recursive-include nblayout/static *.json
+include nblayout/*.js
+include nblayout/*.css
