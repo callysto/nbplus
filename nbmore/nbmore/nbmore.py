@@ -34,4 +34,4 @@ class nbmore(Magics):
         self.shell.run_cell(raw_code, store_history=False)
 
 ip = get_ipython()
-ip.register_magics(MyMagics)
+ip.register_magics(nbmore)
