@@ -1,52 +1,32 @@
 /* ...
 */
 
-requirejs.undef("MathBox");
+requirejs.undef("D3");
 requirejs.config({
-    paths: {"mathbox": "//unpkg.com/mathbox@0.1.0?"}
+    paths: {"d3": "//d3js.org/d3.v5.min"}
 });
 
-define("MathBox", ["@jupyter-widgets/base", "mathbox"],
-    function(widgets, mathbox) {
-    
+define("D3", ["@jupyter-widgets/base", "d3"],
+    function(widgets, d3) {
+
         var render = function() {
-            MathBoxView.__super__.render.apply(this, arguments);
+            D3View.__super__.render.apply(this, arguments);
             this._value_changed();
             this.listenTo(this.model, "change:value", this._value_changed, this);
-            
+
             var model = this.model;
 
             var div = document.createElement("div");
             this.el.appendChild(div);
-            
-            var raw_config = model.get("config");
-            if (raw_config.hasOwnProperty("plugins")) {
-                if (raw_config.plugins.indexOf("controls") !== -1 &&
-                    raw_config.hasOwnProperty("controls")) {
-                        if (raw_config.controls.klass === "THREE.OrbitControls") {
-                            raw_config.controls.klass = THREE.OrbitControls;
-                        }
-                }
-            }
-            
-            var config = Object.assign(
-                {element: this.el.firstChild},
-                raw_config
-            );
 
-            // append a MathBox canvas to the div, set its colour and dimensions
-            // identify three.js bootstrap
-            var mathbox = mathBox(config),
-                three = mathbox.three;
-            three.renderer.setClearColor(new THREE.Color(0xFFFFFF), 1.0);
-            mathbox.three.element.style.width = "100%";
-            mathbox.three.element.style.height = model.get("height")
-                                                      .toString() + "px";
-            if (mathbox.fallback) throw "WebGL error";
-
-            // !important: prompt the canvas to resize
+            // !important: prompt the div to resize
             window.dispatchEvent(new Event("resize"));
-            
+
+            div.style.height = model.get("height").toString() + "px";
+
+            //
+            console.log("Do D3 stuff");
+
             // check if element is visible in browser window
             function isInViewport(element) {
                 var rect = element.getBoundingClientRect(),
@@ -55,9 +35,11 @@ define("MathBox", ["@jupyter-widgets/base", "mathbox"],
                     h = window.innerHeight || html.clientHeight;
                 return rect.top < h && rect.left < w && rect.bottom > 0 && rect.right > 0;
             }
-            
+
             // run update/render loop only for visible elements
             document.getElementById("site").onscroll = (e) => {
+                console.log("Pause visualization");
+                /*
                 if (three.element.offsetParent === null) {
                     three.destroy();
                     return;
@@ -66,30 +48,29 @@ define("MathBox", ["@jupyter-widgets/base", "mathbox"],
                 if (three.Loop.running != visible) {
                     visible ? three.Loop.start() : three.Loop.stop();
                 }
+                */
             }
-            
-            three.Loop.start();
-            
+
             // !important: these global variables must go away someday
             window[model.get("name") + "Model"] = model;
-            window[model.get("name") + "MathBox"] = mathbox;
-            
+            window[model.get("name") + "D3"] = d3;
+
             console.log("Filename is", model.get("filename"));
             if (model.get("filename")) {
                 $.getScript(model.get("filename") + ".js", function(data) {});
             }
         }
-    
+
         var whenValueChanges = function() {
             var old_value = this.model.previous("value"),
                 new_value = this.model.get("value");
         }
-    
-        var MathBoxView = widgets.DOMWidgetView.extend({
+
+        var D3View = widgets.DOMWidgetView.extend({
             render: render,
             _value_changed: whenValueChanges
         });
 
-        return { MathBoxView: MathBoxView }
+        return { D3View: D3View }
     }
       );
