@@ -1,0 +1,103 @@
+.blocks-wrap {
+    /* margin-left: 50px; */
+    display: inline-block;
+    
+    overflow-x: hidden;
+    overflow-y: hidden;
+    position: relative;
+    background: -webkit-linear-gradient(bottom, rgba(255,255,255,0), #fff 67%);;
+
+    padding: 0px;
+    border: 1px solid #e5e5e5;
+  }
+
+.blocks-wrap:first-of-type {
+    margin-left: 0;
+}
+    
+.blocks-wrap:last-of-type {
+    margin-right: 0;
+}
+
+.blocks-container {
+    padding: 50px;
+    line-height: 0;
+}
+
+  .block {
+    padding: 20px;
+    border: 1px solid #cfcfcf;
+    -ms-transform: scale(0.5);
+    -moz-transform: scale(0.5);
+    -o-transform: scale(0.5);
+    -webkit-transform: scale(0.5);
+    transform: scale(0.5);
+
+    -ms-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    -o-transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+      pointer-events: none;
+  }
+
+  .fader {
+    display: inline-block;
+    *display: inline;
+      
+    width: 100%;
+    font-size: 0;
+    line-height: 0
+
+    pointer-events: none;
+    position: absolute;
+    content: '';
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: -webkit-linear-gradient(top, rgba(255,255,255,0), #fff);
+  }
+                                        
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+
+
+.block-selector .modal-header {
+    pointer-events: none;
+}
+
+.block-selector .modal-content {
+    background: none;
+    border: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.block-selector .modal-footer {
+    display: none;
+}
+
+#blocks-wrapper::-webkit-scrollbar { width: 0 !important }
+
+/*
+body.modal-open {
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -o-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(5px);
+}*/
+
+.modal-backdrop.in {
+    opacity: 0.33;
+}
+
