@@ -1,2 +1,2 @@
 include nbvis/js/*.js
-include nbvis/*.css
+include nbvis/css/*.css
