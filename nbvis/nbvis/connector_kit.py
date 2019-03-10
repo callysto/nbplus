@@ -30,11 +30,15 @@
    Assembled for Callysto
 """
 
+import os
+
 from IPython import get_ipython
 from IPython.display import HTML
 from IPython.core.magic import Magics, magics_class, line_magic
 
 from ipywidgets import Label, jslink
+
+module_directory = os.path.dirname(os.path.abspath(__file__))
 
 @magics_class
 class Connector(Magics):
@@ -45,7 +49,7 @@ class Connector(Magics):
         self.connections = []
         self.ns = get_ipython().user_ns
         
-        with open('connectorStyles.css', 'r') as styles:
+        with open(os.path.join(module_directory, 'css/connectorStyles.css'), 'r') as styles:
             display(HTML('<style>' + styles.read() + '</style>'))
 
     @line_magic
