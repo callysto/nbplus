@@ -3,7 +3,8 @@
 
 """
 Helper functions for use in classes.py
-Assembled by Eric Easthope
+Assembled by Eric Easthope for Callysto
+MIT License
 """
 
 from IPython import get_ipython
