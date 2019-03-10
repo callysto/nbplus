@@ -17,7 +17,7 @@ import os
 
 from traitlets import Unicode, Int, Float, Dict, validate
 from ipywidgets import DOMWidget
-from IPython.display import Javascript
+from IPython.display import Javascript, HTML
 
 module_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -49,3 +49,18 @@ class MathBox(DOMWidget):
         super(MathBox, self).__init__(*args, **kwargs)
         with open(os.path.join(module_directory, 'js/mb.js'), 'r') as mb:
             display(Javascript(mb.read()))
+
+class BouncySlider(DOMWidget):
+    _view_module = Unicode('bouncy_slider').tag(sync=True)
+    _view_module_version = Unicode('0.0.0').tag(sync=True)
+    _view_name = Unicode('bouncySliderView').tag(sync=True)
+    value = Float().tag(sync=True)
+    left = Float().tag(sync=True)
+    right = Float().tag(sync=True)
+
+    def __init__(self, *args, **kwargs):
+        super(BouncySlider, self).__init__(*args, **kwargs)
+        with open(os.path.join(module_directory, 'js/bouncySlider.js'), 'r') as slider:
+            display(Javascript(slider.read()))
+        with open(os.path.join(module_directory, 'css/bouncySlider.css'), 'r') as styles:
+            display(HTML('<style>' + styles.read() + '</style>'))
