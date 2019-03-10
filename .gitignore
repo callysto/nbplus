@@ -1,5 +1,6 @@
-# macOS folder attributes
+# macOS folder attributes and custom icons
 .DS_Store
+Icon?
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
