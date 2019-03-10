@@ -1,0 +1,2 @@
+include nblayout/*.js
+include nblayout/*.css
