@@ -47,10 +47,14 @@ class Require(Magics):
           action='store_true',
           help='To require MathBox.js'
     )
+    @magic_arguments.argument('--output', '-o',
+          action='store_true',
+          help='Print all JavaScript used in cell'
+    )
     def require(self, line, cell):
         paths = {
-            "d3": "//unpkg.com/d3-require@1?",
-            "mathbox": "//unpkg.com/mathbox@0.1.0?"
+            "d3": "https://unpkg.com/d3-require@1?",
+            "mathbox": "https://unpkg.com/mathbox@0.1.0?"
         }
 
         for arg in line.split(' '):
@@ -62,12 +66,16 @@ class Require(Magics):
                 line = line.replace(arg, '')
 
         args = magic_arguments.parse_argstring(self.require, line)
+        output = False
+        if vars(args)['output']:
+            output = not output
+
         hide_cell_filepath = os.path.join(module_directory, 'js/requireWrapper.js')
         with open(hide_cell_filepath, 'r') as requireWrapper:
             js = requireWrapper.read()
 
             modules = []
-            for arg in vars(args).keys():
+            for arg in [arg for arg in vars(args).keys() if arg != 'output']:
                 if vars(args)[arg]:
                     modules.append(arg)
                 else:
@@ -82,10 +90,11 @@ class Require(Magics):
                             'd3.require(...submodules).then(d3 => {\n\n#code\n\n});\n' if 'd3' in modules
                                                                               else '\n\n#code\n\n')
                         .replace('#code', cell))
-                print(js)
+                if output: print(js)
                 display(Javascript(js))
             else:
                 print('WARNING: No requirements specified, %%require will behave as %%js.')
+                if output: print(cell)
                 display(Javascript(cell))
 
 get_ipython().register_magics(Require)
