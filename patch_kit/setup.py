@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Minimal code cell hiding and
-   other notebook layout controls using HTML styles, jQuery, and D3.js
+"""Offload and execute reusable/modular code from specialized notebooks
+
+   (See patch_kit.py for further documentation)
 
    Eric Easthope
-   Vincent Cote
 
    MIT License
    Assembled for Callysto
@@ -15,11 +15,11 @@ from setuptools import setup, find_packages
 
 def main():
     setup(
-        name='nblayout',
+        name='patch_kit',
         version='0.0.0',
-        author='Eric Easthope & Vincent Cote',
+        author='Eric Easthope',
         license='MIT',
-        packages=['nblayout'],
+        packages=['patch_kit'],
         include_package_data=True,
         install_requires=[]
     )
