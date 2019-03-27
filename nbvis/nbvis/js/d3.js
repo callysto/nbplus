@@ -39,6 +39,7 @@ define("d3_view", ["@jupyter-widgets/base"], (widgets) => {
     var whenValueChanges = function() {
         var oldValue = this.model.previous("value"),
             newValue = this.model.get("value");
+        // this.touch();
     }
 
     var D3View = widgets.DOMWidgetView.extend({
