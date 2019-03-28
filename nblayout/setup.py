@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """Minimal code cell hiding and
-   other notebook layout controls using HTML styles and D3.js
+   other notebook layout controls using HTML styles, jQuery, and D3.js
 
    Eric Easthope
+   Vincent Cote
 
    MIT License
    Assembled for Callysto
@@ -16,7 +17,7 @@ def main():
     setup(
         name='nblayout',
         version='0.0.0',
-        author='Eric Easthope',
+        author='Eric Easthope & Vincent Cote',
         license='MIT',
         packages=['nblayout'],
         include_package_data=True,
