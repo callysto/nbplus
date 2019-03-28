@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 """Iteratively install remote dependencies using pip
-   
+   The --quiet flag is optional, and produces minimal shell output.
+
    ```
    import auto_package
    dependencies = {
-       'package-name': 'package-url'
+       'package-name': 'package-path'
    }
    for package in dependencies.items():
-       %install $package
+       %install --quiet $package
    ```
 
    Eric Easthope
-   
+
    MIT License
    Assembled for Callysto
 """
