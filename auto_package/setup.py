@@ -17,14 +17,18 @@
    Assembled for Callysto
 """
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 def main():
     setup(
         name='auto_package',
         version='0.0.0',
         author='Eric Easthope',
-        packages=find_packages()
+        py_modules=['auto_package'],
+        entry_points='''
+            [console_scripts]
+            auto_package=auto_package:auto_package
+            ''',
     )
 
 if __name__ == '__main__':
