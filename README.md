@@ -1,29 +1,29 @@
 # nbplus
 
-[nbplus](https://github.com/callysto/nbplus) a collection of Callysto-made Python modules for Creators wanting greater interactivity and visual aesthetic in Jupyter notebooks. The tools here reflect a desire for aggregation of reusable code and uniformity in how we develop interactive content.
+[nbplus](https://github.com/callysto/nbplus) is a collection of Callysto-made Python packages for Creators wanting greater interactivity and aesthetic in Jupyter notebooks. The tools here reflect a desire for reusable code and uniformity in how we develop interactive content.
 
 ## Getting Started
 
-Submodules are installed separately. Available submodules are:
+Packages are installed separately. Available packages are:
 
-* `geogebra`
-* `nbhide`
-* `nbvis`
-* `nbblocks`
-* `nblayout` (BETA)
+* `auto_package` (iteratively install remote packages, see a [demo](https://github.com/callysto/nbplus/blob/master/examples/auto-package.ipynb))
+* `geogebra` (use GeoGebra visualizations in notebooks)
+* `nbvis` (create reactive D3 and MathBox visualizations)
+* `nblayout` (control and toggle code and Markdown cells)
+* `nbtemplate` (load remote notebook snippets)
+* `nbquestions` (create question/answer cells)
+* `patch_kit` (process notebook data through remote notebooks)
 
 Use the following command, replacing `<submodule>` with the name of one of the submodules above:
 
-`pip install --upgrade --force-reinstall --user git+git://github.com/callysto/nbplus.git#egg=<submodule>\&subdirectory=<submodule>`
+`pip install --user git+git://github.com/callysto/nbplus.git#egg=<submodule>\&subdirectory=<submodule>`
 
-You must restart the kernel after the install.
-
-Once installed, import a submodule by referring to itself.
+Restart the kernel after any installation, and import a submodule by referring to itself.
 
 e.g.
 
 ```python
-from nbvis.classes import D3, Vis
+from nbvis.widgets import BouncySlider
 from geogebra.ggb import *
 ```
 
@@ -31,9 +31,7 @@ See the [training manual](https://training.callysto.ca/extensions/nbplus) for do
 
 ## Contributing
 
-Create and develop upon a new branch, then submit pull requests to our `master` branch for review.
-
-Well-behaved objects are aptly named (_what does the object do?_) and readily expose effective code so that incoming learners may transparently access their underlying functionality.
+Create and develop upon a new branch, then submit pull requests to our `master` branch for review. Be sure to describe what the contribution achieves, and include sample code for others to learn from.
 
 ## Authors
 
@@ -41,11 +39,11 @@ Well-behaved objects are aptly named (_what does the object do?_) and readily ex
 
 * [**Cybera**](https://www.cybera.ca) - *Cybera provides supercomputing services.*
 
-See also the list of [contributors](https://github.com/callysto/nbplus/graphs/contributors) who participated in this project.
+See [all contributors](https://github.com/callysto/nbplus/graphs/contributors) who participated in this project.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) for details.
 
 ## Acknowledgments
 

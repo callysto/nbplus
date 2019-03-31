@@ -1,17 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Auto-install Python package dependencies
-   Use this as a line magic, like so
-   
-       ```
-       %install --quiet $<(name, specifier)>
-       ```
-       
-   The --quiet flag is optional, and will produce minimal shell output.
-   
+"""Configure line magic for auto_package
+
    Eric Easthope
-   
+
    MIT License
    Assembled for Callysto
 """
@@ -40,12 +33,12 @@ def install(line='', cell=None):
     else:
         specifier = line
         args = None
-    
+
     try:
         s = make_tuple(specifier)
     except ValueError:
         s = [specifier, specifier]
-    
+
     bash = [sys.executable, '-m',
             'pip', 'install',
             '--upgrade', '--force-reinstall', '--user',
