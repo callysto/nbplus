@@ -19,4 +19,11 @@ const waitForView = (viewId) => {
   });
 };
 
-requirejs(#modules, #moduleNames => {#d3_require});
+requirejs(#modules, #moduleNames => {
+    Promise.all([
+        #d3_require
+    ])
+    .then(function(#submoduleNames) {
+        #code
+    })
+});

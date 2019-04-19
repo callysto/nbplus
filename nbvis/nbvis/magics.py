@@ -57,12 +57,11 @@ class Require(Magics):
             "mathbox": "https://unpkg.com/mathbox@0.1.0?"
         }
 
+        custom_modules = []
         for arg in line.split(' '):
             if '"' in arg or "'" in arg:
                 arg_without_quotes = arg.replace('"', '').replace("'", '')
-
-                global submodules
-                submodules += [arg_without_quotes] if arg_without_quotes not in submodules else []
+                custom_modules += [arg_without_quotes]
                 line = line.replace(arg, '')
 
         args = magic_arguments.parse_argstring(self.require, line)
@@ -86,10 +85,15 @@ class Require(Magics):
                         .replace('#submodules', dumps(submodules) if 'd3' in modules else '[]')
                         .replace('#modules', dumps(modules))
                         .replace('#moduleNames', '(%s)' % ', '.join(modules))
-                        .replace('#d3_require',
-                            'd3.require(...submodules).then(d3 => {\n\n#code\n\n});\n' if 'd3' in modules
-                                                                              else '\n\n#code\n\n')
-                        .replace('#code', cell))
+                        )
+
+                custom_requires = ['d3.require(...submodules)'] + ['\n\td3.require("%s")' % r for r in custom_modules]
+                custom_modules += ['d3'] if 'd3' in modules else []
+                js = (js.replace('#d3_require', ','.join(custom_requires))
+                        .replace('#submoduleNames', str(custom_modules).replace("'", ''))
+                        .replace('#code', cell)
+                        )
+
                 if output: print(js)
                 display(Javascript(js))
             else:
