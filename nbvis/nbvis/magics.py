@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""...
+"""Add a RequireJS magic
+   Use --d3 or --mathbox to include D3 or MathBox resources
+   Use --output to print the cell's JavaScript code
 
-       ```
-       ...
-       ```
+   ```
+   %%require --d3 --output
+   console.log("Hello", d3);
+   ```
 
    Eric Easthope
 
@@ -53,8 +56,8 @@ class Require(Magics):
     )
     def require(self, line, cell):
         paths = {
-            "d3": "https://unpkg.com/d3-require@1?",
-            "mathbox": "https://unpkg.com/mathbox@0.1.0?"
+            "d3": "//unpkg.com/d3-require@1?",
+            "mathbox": "//unpkg.com/mathbox@0.1.0?"
         }
 
         custom_modules = []
