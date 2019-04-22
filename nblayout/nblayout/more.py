@@ -1,7 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-"""
-Jupyter notebook magic to add a "toggle more" button to have 
-extra text cell.
+"""Add a "toggle more" button for supplementary Markdown cells
+
+   Vincent Cote
+
+   MIT License
+   Assembled for Callysto
 """
 
 from __future__ import print_function
@@ -9,7 +14,7 @@ from IPython.core.magic import Magics, magics_class, line_magic
 from IPython import get_ipython
 
 @magics_class
-class nbmore(Magics):
+class ToggleMore(Magics):
 
     @line_magic
     def toggleMore(self, line):
@@ -34,4 +39,4 @@ class nbmore(Magics):
         self.shell.run_cell(raw_code, store_history=False)
 
 ip = get_ipython()
-ip.register_magics(nbmore)
+ip.register_magics(ToggleMore)

@@ -5,14 +5,14 @@
 
    Hide code cells with the %%hide magic,
    click the eye in the toolbar to toggle visibility
-   
+
        ```
        %%hide
        <contents of code cell>
        ```
-   
+
    Eric Easthope
-   
+
    MIT License
    Assembled for Callysto
 """
