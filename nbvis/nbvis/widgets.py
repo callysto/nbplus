@@ -15,7 +15,7 @@
 
 import os
 
-from traitlets import Unicode, Int, Float, Dict, validate
+from traitlets import Unicode, Int, Float, Dict, validate, List
 from ipywidgets import DOMWidget
 from IPython.display import Javascript, HTML
 
@@ -27,11 +27,15 @@ class D3(DOMWidget):
     _view_name = Unicode('D3View').tag(sync=True)
     name = Unicode().tag(sync=True)
     height = Int().tag(sync=True)
-    value = Float().tag(sync=True)
+    value = Float(default_value=0).tag(sync=True)
     filename = Unicode().tag(sync=True)
+    values = List(default_value=[]).tag(sync=True)
 
     def __init__(self, *args, **kwargs):
         super(D3, self).__init__(*args, **kwargs)
+        if self.values != []:
+            for value in self.values:
+                self.add_traits(**{value: Float(default_value=0).tag(sync=True)})
         with open(os.path.join(module_directory, 'js/d3.js'), 'r') as d3:
             display(Javascript(d3.read()))
 
@@ -42,11 +46,15 @@ class MathBox(DOMWidget):
     name = Unicode().tag(sync=True)
     height = Int().tag(sync=True)
     config = Dict().tag(sync=True)
-    value = Float().tag(sync=True)
+    value = Float(default_value=0).tag(sync=True)
     filename = Unicode().tag(sync=True)
+    values = List(default_value=[]).tag(sync=True)
 
     def __init__(self, *args, **kwargs):
         super(MathBox, self).__init__(*args, **kwargs)
+        if self.values != []:
+            for value in self.values:
+                self.add_traits(**{value: Float(default_value=0).tag(sync=True)})
         with open(os.path.join(module_directory, 'js/mb.js'), 'r') as mb:
             display(Javascript(mb.read()))
 
