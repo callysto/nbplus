@@ -56,7 +56,7 @@ class Require(Magics):
     )
     def require(self, line, cell):
         paths = {
-            "d3": "//unpkg.com/d3-require@1?",
+            "d3-require": "//cdn.jsdelivr.net/npm/d3-require@1?",
             "mathbox": "//unpkg.com/mathbox@0.1.0?"
         }
 
@@ -68,9 +68,7 @@ class Require(Magics):
                 line = line.replace(arg, '')
 
         args = magic_arguments.parse_argstring(self.require, line)
-        output = False
-        if vars(args)['output']:
-            output = not output
+        output = True if vars(args)['output'] else False
 
         hide_cell_filepath = os.path.join(module_directory, 'js/requireWrapper.js')
         with open(hide_cell_filepath, 'r') as requireWrapper:
@@ -79,21 +77,23 @@ class Require(Magics):
             modules = []
             for arg in [arg for arg in vars(args).keys() if arg != 'output']:
                 if vars(args)[arg]:
-                    modules.append(arg)
+                    modules.append(arg + ('-require' if arg == 'd3' else ''))
                 else:
-                    del paths[arg]
+                    del paths[arg + ('-require' if arg == 'd3' else '')]
+            moduleNames = [m.split('-')[0] for m in modules]
 
             if len(modules) > 0:
                 js = (js.replace('#paths', dumps(paths))
-                        .replace('#submodules', dumps(submodules) if 'd3' in modules else '[]')
+                        .replace('#submodules', dumps(submodules) if 'd3-require' in modules else '[]')
                         .replace('#modules', dumps(modules))
-                        .replace('#moduleNames', '(%s)' % ', '.join(modules))
+                        .replace('#moduleNames', '(%s)' % ', '.join(moduleNames))
                         )
 
                 custom_requires = ['d3.require(...submodules)'] + ['\n\td3.require("%s")' % r for r in custom_modules]
-                if 'd3' in modules: custom_modules.insert(0, 'd3')
-                js = (js.replace('#d3_require', ','.join(custom_requires))
-                        .replace('#submoduleNames', str(custom_modules).replace("'", ''))
+                if 'd3-require' in modules:
+                    custom_modules.insert(0, 'd3')
+                js = (js.replace('#d3_require', ','.join(custom_requires) if 'd3-require' in modules else '')
+                        .replace('#submoduleNames', str(custom_modules).replace("'", '') if 'd3-require' in modules else '')
                         .replace('#code', cell)
                         )
 

@@ -1,9 +1,8 @@
-/* ...
-*/
+// ...
 
 requirejs.config({
     paths: {
-      mathbox: "//unpkg.com/mathbox@0.1.0?"
+      "mathbox": "//unpkg.com/mathbox@0.1.0?"
     }
 });
 
@@ -16,6 +15,7 @@ define("mathbox_view", ["@jupyter-widgets/base", "mathbox"], (widgets, mathbox) 
         var model = this.model;
 
         var div = document.createElement("div");
+        div.id = model.get("name");
         this.el.appendChild(div);
 
         var raw_config = model.get("config");
