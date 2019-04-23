@@ -1,5 +1,4 @@
-/* ...
-*/
+// ...
 
 define("d3_view", ["@jupyter-widgets/base"], (widgets) => {
     var render = function() {
@@ -48,5 +47,4 @@ define("d3_view", ["@jupyter-widgets/base"], (widgets) => {
     });
 
     return { D3View: D3View }
-    }
-);
+});
