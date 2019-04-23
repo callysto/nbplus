@@ -27,15 +27,15 @@ module_directory = os.path.dirname(os.path.abspath(__file__))
 
 @magics_class
 class HideCell(Magics):
-	def __init__(self, shell):
-		super(HideCell, self).__init__(shell)
+    def __init__(self, shell):
+        super(HideCell, self).__init__(shell)
 
-	@cell_magic
-	def hide(self, line, cell):
-		hide_cell_filepath = os.path.join(module_directory, "hideCell.js")
-		with open(hide_cell_filepath, 'r') as hideCell:
-			display(Javascript(hideCell.read()))
-		get_ipython().run_cell(cell)
+    @cell_magic
+    def hide(self, line, cell):
+        hide_cell_filepath = os.path.join(module_directory, "hideCell.js")
+        with open(hide_cell_filepath, 'r') as hideCell:
+            display(Javascript(hideCell.read()))
+        get_ipython().run_cell(cell)
 
 toggle_filepath = os.path.join(module_directory, "createCellToggle.js")
 with open(toggle_filepath, 'r') as createCellToggle:
