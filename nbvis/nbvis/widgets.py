@@ -27,15 +27,15 @@ class D3(DOMWidget):
     _view_name = Unicode('D3View').tag(sync=True)
     name = Unicode().tag(sync=True)
     height = Int().tag(sync=True)
-    value = Float(default_value=0).tag(sync=True)
+    value = Float(default_value=0.).tag(sync=True)
     filename = Unicode().tag(sync=True)
-    values = List(default_value=[]).tag(sync=True)
+    variables = List(default_value=[]).tag(sync=True)
 
     def __init__(self, *args, **kwargs):
         super(D3, self).__init__(*args, **kwargs)
-        if self.values != []:
-            for value in self.values:
-                self.add_traits(**{value: Float(default_value=0).tag(sync=True)})
+        if self.variables != []:
+            for var in self.variables:
+                self.add_traits(**{var: Float(default_value=0.).tag(sync=True)})
         with open(os.path.join(module_directory, 'js/d3.js'), 'r') as d3:
             display(Javascript(d3.read()))
 
@@ -46,18 +46,19 @@ class MathBox(DOMWidget):
     name = Unicode().tag(sync=True)
     height = Int().tag(sync=True)
     config = Dict().tag(sync=True)
-    value = Float(default_value=0).tag(sync=True)
+    value = Float(default_value=0.).tag(sync=True)
     filename = Unicode().tag(sync=True)
-    values = List(default_value=[]).tag(sync=True)
+    variables = List(default_value=[]).tag(sync=True)
 
     def __init__(self, *args, **kwargs):
         super(MathBox, self).__init__(*args, **kwargs)
-        if self.values != []:
-            for value in self.values:
-                self.add_traits(**{value: Float(default_value=0).tag(sync=True)})
+        if self.variables != []:
+            for var in self.variables:
+                self.add_traits(**{var: Float(default_value=0.).tag(sync=True)})
         with open(os.path.join(module_directory, 'js/mb.js'), 'r') as mb:
             display(Javascript(mb.read()))
 
+"""
 class BouncySlider(DOMWidget):
     _view_module = Unicode('bouncy_slider').tag(sync=True)
     _view_module_version = Unicode('0.0.0').tag(sync=True)
@@ -72,3 +73,4 @@ class BouncySlider(DOMWidget):
             display(Javascript(slider.read()))
         with open(os.path.join(module_directory, 'css/bouncySlider.css'), 'r') as styles:
             display(HTML('<style>' + styles.read() + '</style>'))
+"""
