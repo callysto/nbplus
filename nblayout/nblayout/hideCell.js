@@ -1,7 +1,10 @@
 /* ...
 */
 
-$(document).ready(function() {
+if (typeof Jupyter !== "undefined") $(document).ready(hideCell)
+else hideCell();
+
+function hideCell() {
     var cellElement = element.parents(".cell")[0];
 
     if (typeof Jupyter !== "undefined") {
@@ -36,4 +39,4 @@ $(document).ready(function() {
               });
         });
     });
-});
+}
