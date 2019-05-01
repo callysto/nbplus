@@ -1,5 +1,6 @@
 // ...
 
+requirejs.undef("d3_view");
 define("d3_view", ["@jupyter-widgets/base"], (widgets) => {
     var render = function() {
         // var d3 = Object.assign({}, d3);

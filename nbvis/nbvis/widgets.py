@@ -36,8 +36,6 @@ class D3(DOMWidget):
         if self.variables != []:
             for var in self.variables:
                 self.add_traits(**{var: Float(default_value=0.).tag(sync=True)})
-        with open(os.path.join(module_directory, 'js/d3.js'), 'r') as d3:
-            display(Javascript(d3.read()))
 
 class MathBox(DOMWidget):
     _view_module = Unicode('mathbox_view').tag(sync=True)
@@ -55,8 +53,6 @@ class MathBox(DOMWidget):
         if self.variables != []:
             for var in self.variables:
                 self.add_traits(**{var: Float(default_value=0.).tag(sync=True)})
-        with open(os.path.join(module_directory, 'js/mb.js'), 'r') as mb:
-            display(Javascript(mb.read()))
 
 """
 class BouncySlider(DOMWidget):
@@ -74,3 +70,9 @@ class BouncySlider(DOMWidget):
         with open(os.path.join(module_directory, 'css/bouncySlider.css'), 'r') as styles:
             display(HTML('<style>' + styles.read() + '</style>'))
 """
+
+with open(os.path.join(module_directory, 'js/mb.js'), 'r') as mb:
+    display(Javascript(mb.read()))
+
+with open(os.path.join(module_directory, 'js/d3.js'), 'r') as d3:
+    display(Javascript(d3.read()))
