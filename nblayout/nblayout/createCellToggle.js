@@ -3,7 +3,7 @@
 
 requirejs.config({
     paths: {
-        "d3-require": "//cdn.jsdelivr.net/npm/d3-require@1?"
+        "d3-require": "//cdn.jsdelivr.net/npm/d3-require@1?",
     }
 });
 
