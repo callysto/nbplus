@@ -6,6 +6,10 @@ requirejs.config({
     }
 });
 
+console.log(requirejs.s.contexts._.config);
+console.log("Before define");
+
+requirejs.undef("mathbox_view");
 define("mathbox_view", ["@jupyter-widgets/base", "mathbox"], (widgets, mathbox) => {
     var render = function() {
         MathBoxView.__super__.render.apply(this, arguments);
