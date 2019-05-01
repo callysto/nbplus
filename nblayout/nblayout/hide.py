@@ -39,5 +39,6 @@ class HideCell(Magics):
 
 toggle_filepath = os.path.join(module_directory, "createCellToggle.js")
 with open(toggle_filepath, 'r') as createCellToggle:
-	display(Javascript(createCellToggle.read()))
+    display(Javascript(createCellToggle.read()))
+
 get_ipython().register_magics(HideCell)
