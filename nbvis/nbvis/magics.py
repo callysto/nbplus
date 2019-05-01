@@ -39,7 +39,6 @@ submodules = [
 
 @magics_class
 class Require(Magics):
-
     @cell_magic
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('--d3', '-d3',
@@ -55,24 +54,34 @@ class Require(Magics):
           help='Print all JavaScript used in cell'
     )
     def require(self, line, cell):
+        self.submodules = submodules
+        # hard-code paths to d3-require and mathbox
         paths = {
             "d3-require": "//cdn.jsdelivr.net/npm/d3-require@1?",
             "mathbox": "//unpkg.com/mathbox@0.1.0?"
         }
 
+
         custom_modules = []
         for arg in line.split(' '):
-            if '"' in arg or "'" in arg:
+            if '--' not in arg:
                 arg_without_quotes = arg.replace('"', '').replace("'", '')
-                custom_modules += [arg_without_quotes]
+                if 'd3-' not in arg_without_quotes:
+                    custom_modules += [arg_without_quotes]
+                elif '%s' % arg_without_quotes not in self.submodules:
+                    self.submodules += ['%s' % arg_without_quotes]
                 line = line.replace(arg, '')
 
+        # parse magic line arguments as string
         args = magic_arguments.parse_argstring(self.require, line)
+
+        # print cell javascript if True
         output = True if vars(args)['output'] else False
 
-        hide_cell_filepath = os.path.join(module_directory, 'js/requireWrapper.js')
-        with open(hide_cell_filepath, 'r') as requireWrapper:
-            js = requireWrapper.read()
+        # read requirejs code
+        require_filepath = os.path.join(module_directory, 'js/requireWrapper.js')
+        with open(require_filepath, 'r') as wrapper:
+            js = wrapper.read()
 
             modules = []
             for arg in [arg for arg in vars(args).keys() if arg != 'output']:
@@ -83,8 +92,9 @@ class Require(Magics):
             moduleNames = [m.split('-')[0] for m in modules]
 
             if len(modules) > 0:
+
                 js = (js.replace('#paths', dumps(paths))
-                        .replace('#submodules', dumps(submodules) if 'd3-require' in modules else '[]')
+                        .replace('#submodules', dumps(self.submodules) if 'd3-require' in modules else '[]')
                         .replace('#modules', dumps(modules))
                         .replace('#moduleNames', '(%s)' % ', '.join(moduleNames))
                         )
@@ -93,13 +103,15 @@ class Require(Magics):
                 if 'd3-require' in modules:
                     custom_modules.insert(0, 'd3')
                 js = (js.replace('#d3_require', ','.join(custom_requires) if 'd3-require' in modules else '')
-                        .replace('#submoduleNames', str(custom_modules).replace("'", '') if 'd3-require' in modules else '')
+                        .replace('#submoduleNames', str(custom_modules).replace("'", ''))
                         .replace('#code', cell)
                         )
 
                 if output: print(js)
                 display(Javascript(js))
             else:
+                #! Eric: Perhaps %%require should be able to only load custom_modules,
+                #        instead of defaulting to this warning?
                 print('WARNING: No requirements specified, %%require will behave as %%js.')
                 if output: print(cell)
                 display(Javascript(cell))
