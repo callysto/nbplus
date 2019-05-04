@@ -82,6 +82,7 @@ if (typeof Jupyter !== "undefined") {
     });
 }
 
+/*
 window.clearSelection = () => {
     if (window.getSelection) window.getSelection().removeAllRanges()
     else if (document.selection) document.selection.empty();
@@ -95,3 +96,4 @@ window.toggleCellVisibility = (cellElement, visible) => {
     innerCell.style.backgroundColor = visible ? "unset" : "#cfcfcf";
     innerCell.style.opacity = visible ? "unset" : 1/10;
 }
+*/
