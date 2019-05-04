@@ -84,14 +84,14 @@ class Require(Magics):
             js = wrapper.read()
 
             modules = []
-            for arg in [arg for arg in vars(args).keys() if arg != 'output']:
+            for arg in [arg for arg in vars(args).keys() if (arg != 'output' and arg != 'mathbox')]:
                 if vars(args)[arg]:
                     modules.append(arg + ('-require' if arg == 'd3' else ''))
                 else:
                     del paths[arg + ('-require' if arg == 'd3' else '')]
             moduleNames = [m.split('-')[0] for m in modules]
 
-            if len(modules) > 0:
+            if True:
 
                 js = (js.replace('#paths', dumps(paths))
                         .replace('#submodules', dumps(self.submodules) if 'd3-require' in modules else '[]')
