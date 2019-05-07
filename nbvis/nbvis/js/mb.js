@@ -26,9 +26,10 @@ define("mathbox_view", ["@jupyter-widgets/base", "mathbox"], (widgets, mathbox) 
         if (raw_config.hasOwnProperty("plugins")) {
             if (raw_config.plugins.indexOf("controls") !== -1 &&
                 raw_config.hasOwnProperty("controls")) {
-                    if (raw_config.controls.klass === "THREE.OrbitControls") {
-                        raw_config.controls.klass = THREE.OrbitControls;
-                    }
+                    //console.log(raw_config.controls);
+                    //if (raw_config.controls.klass == "THREE.OrbitControls") {
+                    raw_config.controls.klass = THREE.OrbitControls;
+                    //}
             }
         }
 
