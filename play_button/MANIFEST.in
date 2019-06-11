@@ -1,0 +1,2 @@
+include play_button/*.js
+include play_button/*.css
